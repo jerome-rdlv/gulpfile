@@ -1,8 +1,11 @@
 {
     "name": "gulpfile",
-    "version": "0.1",
+    "version": "0.0.1",
     "main": "index.js",
-    "repository": "https://gitlab.rue-de-la-vieille.fr/jerome/gulpfile",
+    "repository": {
+        "url": "https://gitlab.rue-de-la-vieille.fr/jerome/gulpfile",
+        "type": "git"
+    },
     "author": "Jérôme Mulsant <jerome@rue-de-la-vieille.fr>",
     "license": "MIT",
     "private": true,
