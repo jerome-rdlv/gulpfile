@@ -1,5 +1,6 @@
 {
     "name": "gulpfile",
+    "version": "0.0.1",
     "main": "index.js",
     "repository": {
         "url": "https://gitlab.rue-de-la-vieille.fr/jerome/gulpfile",
