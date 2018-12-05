@@ -10,7 +10,7 @@ const
     through = require('through2'),
     touch = require('../lib/touch'),
     Vinyl = require('vinyl')
-;
+
 
 function normalizeSizes(sizes) {
     for (let key in sizes) {
@@ -20,82 +20,81 @@ function normalizeSizes(sizes) {
                     sizes[key][i] = [
                         sizes[key][i],
                         sizes[key][i]
-                    ];
+                    ]
                 }
             }
         }
     }
-    return sizes;
+    return sizes
 }
 
-const generateThumbScss =  function (opts) {
+const generateThumbScss = function (opts) {
 
-    opts = typeof opts === 'undefined' ? {} : opts;
-    opts.sizes = opts.sizes ? normalizeSizes(opts.sizes) : null;
-    opts.template = opts.template ? opts.template : 'thumb.scss.mustache';
-    opts.output = opts.output ? opts.output : '_thumb.scss';
+    opts = typeof opts === 'undefined' ? {} : opts
+    opts.sizes = opts.sizes ? normalizeSizes(opts.sizes) : null
+    opts.template = opts.template ? opts.template : 'thumb.scss.mustache'
+    opts.output = opts.output ? opts.output : '_thumb.scss'
 
     const data = {
         items: []
-    };
+    }
 
     const eachFile = function (file, encoding, callback) {
 
-        const filename = path.basename(file.relative);
+        const filename = path.basename(file.relative)
         if (opts.sizes.hasOwnProperty(filename)) {
             const sizes = opts.sizes[filename].sort(function (a, b) {
-                return b[0] - a[0];
-            });
-            const ext = path.extname(file.relative);
+                return b[0] - a[0]
+            })
+            const ext = path.extname(file.relative)
             data.items.push({
                 name: path.basename(file.relative, ext),
                 ext: ext,
                 sizes: sizes.map(function (size) {
-                    return size[0] +': '+ size[1]
+                    return size[0] + ': ' + size[1]
                 }).join(', '),
                 max: sizes[0][0]
-            });
+            })
         }
 
-        callback();
-    };
+        callback()
+    }
 
     const endStream = function (callback) {
         try {
-            const template = fs.readFileSync(opts.template, 'utf8');
-            const scss = mustache.render(template, data);
-            const buffer = Buffer.from(scss, 'utf8');
+            const template = fs.readFileSync(opts.template, 'utf8')
+            const scss = mustache.render(template, data)
+            const buffer = Buffer.from(scss, 'utf8')
 
             this.push(new Vinyl({
                 path: opts.output,
                 contents: buffer
-            }));
-            callback();
+            }))
+            callback()
+        } catch (error) {
+            callback(error)
         }
-        catch (error) {
-            callback(error);
-        }
-    };
+    }
 
-    return through.obj(eachFile, endStream);
+    return through.obj(eachFile, endStream)
 
-};
+}
 
-const generateThumb =  function (opts) {
+const generateThumb = function (opts) {
 
-    opts = typeof opts === 'undefined' ? {} : opts;
-    opts.sizes = opts.sizes ? normalizeSizes(opts.sizes) : null;
+    opts = typeof opts === 'undefined' ? {} : opts
+    opts.sizes = opts.sizes ? normalizeSizes(opts.sizes) : null
 
     return through.obj(function (file, encoding, callback) {
 
-        const filename = path.basename(file.relative);
+        const filename = path.basename(file.relative)
         if (opts.sizes.hasOwnProperty(filename)) {
 
-            const pipe = this;
-            const promises = [];
+            const pipe = this
+            const promises = []
 
-            const ext = path.extname(filename);
-            const base = path.basename(filename, ext);
+            const ext = path.extname(filename)
+            const base = path.basename(filename, ext)
 
             for (let i = 0; i < opts.sizes[filename].length; ++i) {
                 promises.push(new Promise(function (resolve) {
@@ -104,29 +103,28 @@ const generateThumb =  function (opts) {
                             pipe.push(new Vinyl({
                                 path: base + '_' + width + ext,
                                 contents: buffer
-                            }));
-                            resolve();
-                        });
-                    })(opts.sizes[filename][i][1]);
-                }));
+                            }))
+                            resolve()
+                        })
+                    })(opts.sizes[filename][i][1])
+                }))
             }
 
             Promise.all(promises).then(function () {
-                callback();
-            });
+                callback()
+            })
+        } else {
+            callback()
         }
-        else {
-            callback();
-        }
-    });
+    })
 
-};
-module.exports = generateThumb;
+}
+module.exports = generateThumb
 
-const thumbFile = config.srcPath + '/thumbs.json';
+const thumbFile = config.srcPath + '/thumbs.json'
 
 if (fs.existsSync(thumbFile)) {
-    const thumbSizes = JSON.parse(fs.readFileSync(thumbFile, 'utf8'));
+    const thumbSizes = JSON.parse(fs.readFileSync(thumbFile, 'utf8'))
     gulp.task('thumb-scss', function () {
         return gulp.src(config.srcPath + config.assetsDir + '/img/*')
             .pipe(generateThumbScss({
@@ -135,8 +133,8 @@ if (fs.existsSync(thumbFile)) {
                 template: config.srcPath + '/thumb.scss.mustache'
             }))
             .pipe(gulp.dest(config.varPath)).pipe(touch())
-            ;
-    });
+            
+    })
     gulp.task('thumb', gulp.series(
         'thumb-scss',
         function thumbCore() {
@@ -144,18 +142,17 @@ if (fs.existsSync(thumbFile)) {
                 .pipe(generateThumb({
                     sizes: thumbSizes
                 }))
-                .pipe(changed(config.devPath + '/img/thumb')).pipe(touch())
+                .pipe(changed(config.distPath + '/img/thumb')).pipe(touch())
                 .pipe(imagemin(config.imageminOptions))
-                .pipe(gulp.dest(config.devPath + '/img/thumb')).pipe(touch())
-                .pipe(gulp.dest(config.prodPath + '/img/thumb')).pipe(touch())
-                ;
+                .pipe(gulp.dest(config.distPath + '/img/thumb')).pipe(touch())
+                
         }
-    ));
+    ))
 
     gulp.task('thumb:watch', function () {
         return gulp.watch([
             config.srcPath + config.assetsDir + 'img/*',
             config.srcPath + 'thumb.scss.mustache'
-        ], 'thumb');
-    });
+        ], 'thumb')
+    })
 }

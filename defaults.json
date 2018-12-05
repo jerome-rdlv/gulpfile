@@ -1,10 +1,8 @@
 {
     "url": null,
-    "basePath": "./",
     "srcDir": "src",
     "varDir": "var",
-    "devDir": "dev",
-    "prodDir": "prod",
+    "distDir": "assets",
     "assetsDir": "",
     "cacheBust": "path",
     "tasks": {

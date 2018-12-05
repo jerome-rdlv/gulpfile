@@ -1,5 +1,5 @@
 /*global config*/
-if (!config.tasks.svg) return;
+if (!config.tasks.svg) return
 
 const
     cacheBustSvgRefs = require('../lib/cachebust-svg-refs'),
@@ -11,13 +11,13 @@ const
     path = require('path'),
     svgmin = require('gulp-svgmin'),
     touch = require('../lib/touch')
-;
+
 
 function svgminCallback(file) {
     const prefix = 'i' + crypto.createHash('sha1')
-            .update(path.basename(file.relative, path.extname(file.relative)))
-            .digest('hex')
-            .substr(0, 4);
+        .update(path.basename(file.relative, path.extname(file.relative)))
+        .digest('hex')
+        .substr(0, 4)
 
     const plugins = [
         {removeDoctype: true},
@@ -36,12 +36,12 @@ function svgminCallback(file) {
                 floatPrecision: 5
             }
         }
-    ];
+    ]
 
     if (/_anim\.svg$/.test(file.path)) {
-        plugins.push({mergePaths: false});
+        plugins.push({mergePaths: false})
     }
-    return { plugins: plugins };
+    return {plugins: plugins}
 }
 
 gulp.task('svg', function () {
@@ -52,7 +52,6 @@ gulp.task('svg', function () {
         .pipe(svgmin(svgminCallback))
         .pipe(gulp.dest(config.varPath)).pipe(touch())
         .pipe(clearSvgParams())
-        .pipe(gulp.dest(config.devPath)).pipe(touch())
-        .pipe(gulp.dest(config.prodPath)).pipe(touch())
-    ;
-});
+        .pipe(gulp.dest(config.distPath)).pipe(touch())
+        
+})

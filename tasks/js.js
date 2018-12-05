@@ -1,6 +1,6 @@
 /*global config*/
 if (config.tasks.js) {
-    define();
+    define()
 }
 
 function define() {
@@ -12,23 +12,22 @@ function define() {
         touch = require('../lib/touch'),
         terser = require('gulp-terser'),
         webpack = require('webpack-stream')
-    ;
+    
 
     gulp.task('js', function () {
 
-        let src = [];
+        let src = []
         if (config.entries.length) {
             for (let i = 0; i < config.entries.length; ++i) {
-                src.push(config.srcPath + config.assetsDir + config.entries[i]);
+                src.push(config.srcPath + config.assetsDir + config.entries[i])
             }
-        }
-        else {
-            src.push(config.srcPath + config.assetsDir + 'js/*.js');
+        } else {
+            src.push(config.srcPath + config.assetsDir + 'js/*.js')
         }
 
         return gulp.src(src, {base: config.srcPath})
-            // .pipe(eslint())
-            // .pipe(eslint.format())
+        // .pipe(eslint())
+        // .pipe(eslint.format())
             .pipe(named())
             .pipe(webpack({
                 target: 'web',
@@ -53,6 +52,7 @@ function define() {
                 },
                 watch: global.watch,
                 devtool: 'inline-source-map',
+                mode: config.production ? 'production' : 'development',
                 output: {
                     filename: 'js/[name].js',
                 }
@@ -63,7 +63,6 @@ function define() {
             //     this.push(file);
             //     cb();
             // }))
-            .pipe(gulp.dest(config.devPath)).pipe(touch())
             // .pipe(through.obj(function (file, enc, cb) {
             //     // Don’t pipe through any source map files as it will be handled by gulp-sourcemaps
             //     if (!/\.map$/.test(file.path)) {
@@ -73,8 +72,8 @@ function define() {
             // }))
             .pipe(browserSync.stream())
             .pipe(terser())
-            .pipe(gulp.dest(config.prodPath)).pipe(touch())
+            .pipe(gulp.dest(config.distPath)).pipe(touch())
             .pipe(gulp.dest(config.varPath)).pipe(touch())
-            ;
-    });
+            
+    })
 }
