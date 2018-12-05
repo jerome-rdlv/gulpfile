@@ -1,0 +1,20 @@
+{
+    "url": null,
+    "basePath": "./",
+    "srcDir": "src",
+    "varDir": "var",
+    "devDir": "dev",
+    "prodDir": "prod",
+    "assetsDir": "",
+    "cacheBust": "path",
+    "tasks": {
+        "scss": {
+            "autoprefixer": ["last 10 version", "ie 8", "ie 9"]
+        },
+        "browsersync": true,
+        "svg": true,
+        "img": true,
+        "font": true,
+        "js": true
+    }
+}
