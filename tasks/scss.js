@@ -14,6 +14,7 @@ const
     cacheBustCssRefs = require('../lib/cachebust-css-refs'),
     cssnano = require('gulp-cssnano'),
     gulp = require('gulp'),
+    gulpif = require('gulp-if'),
     rename = require('gulp-rename'),
     sass = require('gulp-sass'),
     touch = require('../lib/touch')
@@ -32,10 +33,10 @@ gulp.task('scss', function () {
         .pipe(autoprefixer(...config.tasks.scss.autoprefixer))
         .pipe(browserSync.stream())
         .pipe(cacheBustCssRefs(config.distPath + config.assetsDir + 'css/'))
-        .pipe(cssnano({
+        .pipe(gulpif(config.production, cssnano({
             autoprefixer: false,
             zindex: false
-        }))
+        })))
         .pipe(gulp.dest(config.varPath)).pipe(touch())
         .pipe(gulp.dest(config.distPath)).pipe(touch())
         

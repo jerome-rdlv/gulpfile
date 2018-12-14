@@ -8,6 +8,7 @@ function define() {
         browserSync = require('browser-sync').get('bs'),
         // eslint = require('gulp-eslint'),
         gulp = require('gulp'),
+        gulpif = require('gulp-if'),
         named = require('vinyl-named'),
         touch = require('../lib/touch'),
         terser = require('gulp-terser'),
@@ -57,23 +58,10 @@ function define() {
                     filename: 'js/[name].js',
                 }
             }))
-            // .pipe(through.obj(function (file, enc, cb) {
-            //     file.path = file.path.replace(file.base, config.srcPath);
-            //     file.base = config.srcPath;
-            //     this.push(file);
-            //     cb();
-            // }))
-            // .pipe(through.obj(function (file, enc, cb) {
-            //     // Don’t pipe through any source map files as it will be handled by gulp-sourcemaps
-            //     if (!/\.map$/.test(file.path)) {
-            //         this.push(file);
-            //     }
-            //     cb();
-            // }))
-            .pipe(browserSync.stream())
-            .pipe(terser())
+            .pipe(gulpif(config.production, terser()))
             .pipe(gulp.dest(config.distPath)).pipe(touch())
             .pipe(gulp.dest(config.varPath)).pipe(touch())
+            .pipe(browserSync.stream())
             
     })
 }
