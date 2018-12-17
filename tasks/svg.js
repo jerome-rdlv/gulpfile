@@ -26,7 +26,8 @@ function svgminCallback(file) {
         {convertStyleToAttrs: true},
         {
             cleanupIDs: {
-                prefix: prefix + '-'
+                prefix: prefix + '-',
+                minify: true
             }
         },
         {removeViewBox: false},
@@ -38,9 +39,6 @@ function svgminCallback(file) {
         }
     ]
 
-    if (/_anim\.svg$/.test(file.path)) {
-        plugins.push({mergePaths: false})
-    }
     return {plugins: plugins}
 }
 
@@ -53,5 +51,5 @@ gulp.task('svg', function () {
         .pipe(gulp.dest(config.varPath)).pipe(touch())
         .pipe(clearSvgParams())
         .pipe(gulp.dest(config.distPath)).pipe(touch())
-        
+
 })
