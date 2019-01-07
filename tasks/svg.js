@@ -51,8 +51,6 @@ function svgminCallback(file) {
         }
     }
     
-    console.log(plugins);
-
     return {plugins: plugins}
 }
 
