@@ -29,8 +29,8 @@ function define() {
 
     gulp.task('inline', function () {
         return gulp.src(entries, {base: config.srcPath})
-        // .pipe(bundler())
-            .pipe(buffer())
+            // .pipe(bundler())
+            // .pipe(buffer())
             .pipe(uglify())
             .pipe(gulp.dest(config.distPath)).pipe(touch())
             .pipe(browserSync.stream());
