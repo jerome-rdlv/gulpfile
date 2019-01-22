@@ -39,8 +39,9 @@
         "gulp-sourcemaps": ">=2.6",
         "gulp-svgmin": ">=1.2",
         "gulp-tap": ">=1.0",
-        "gulp-touch-cmd": ">=0.0",
         "gulp-terser": ">=0.1",
+        "gulp-touch-cmd": ">=0.0",
+        "gulp-uglify": "^3.0.1",
         "jest": ">=23.1",
         "mustache": ">=2.3",
         "path": ">=0.12",
@@ -51,6 +52,7 @@
         "vinyl": ">=2.1",
         "vinyl-buffer": ">=1.0",
         "vinyl-named": ">=1.1",
+        "vinyl-transform": "^1.0.0",
         "webpack-stream": ">=4.0.3"
     }
 }
