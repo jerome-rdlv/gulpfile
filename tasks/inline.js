@@ -1,26 +1,35 @@
 /*global config*/
 if (config.tasks.js) {
-    define()
+    define();
 }
 
 function define() {
     const
         browserify = require('browserify'),
+        gulp = require('gulp'),
+        touch = require('../lib/touch'),
+        source = require('vinyl-source-stream'),
         transform = require('vinyl-transform'),
-        gulp = require('gulp');
-    
+        uglify = require('gulp-uglify');
+
+    var browserified = transform(function (filename) {
+        var b = browserify(filename);
+        return b.bundle();
+    });
+
+    var entries = config.inlines.map(function (entry) {
+        return config.srcPath + config.assetsDir + entry;
+    });
 
     gulp.task('inline', function () {
-        var browserified = transform(function (filename) {
-            return browserify(filename).bundle();
-        });
-        
-        var entries = config.inlines.map(function (entry) {
-            return config.srcPath + config.assetsDir + entry;
-        });
-        
-        return gulp.src(entries, {bas: config.srcPath})
-            .pipe(browserified)
-            .pipe(gulp.dest(config.distPath)).pipe(touch())
-    })
+        return browserify({
+            entries: entries
+        }).bundle()
+            .pipe(source('bundle.js'))
+            .pipe(gulp.dest(config.distPath)).pipe(touch());
+        // return gulp.src('header.js', {base: config.srcPath})
+        //     .pipe(browserified)
+        //     .pipe(uglify())
+        //     .pipe(gulp.dest(config.distPath)).pipe(touch());
+    });
 }

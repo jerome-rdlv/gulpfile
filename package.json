@@ -52,6 +52,7 @@
         "vinyl": ">=2.1",
         "vinyl-buffer": ">=1.0",
         "vinyl-named": ">=1.1",
+        "vinyl-source-stream": "^2.0.0",
         "vinyl-transform": "^1.0.0",
         "webpack-stream": ">=4.0.3"
     }
