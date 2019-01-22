@@ -85,6 +85,9 @@ module.exports = function (override) {
     if (config.tasks.js) {
         tasks.push('js')
         watchers.push('watch:js')
+        
+        tasks.push('inline');
+        watchers.push('watch:inline');
     }
 
 
