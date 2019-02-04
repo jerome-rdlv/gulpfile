@@ -23,9 +23,12 @@ function define() {
         });
     };
 
-    var entries = config.inlines.map(function (entry) {
-        return config.srcPath + config.assetsDir + entry;
-    });
+    var entries = [];
+    if (config.inlines) {
+        entries = config.inlines.map(function (entry) {
+            return config.srcPath + config.assetsDir + entry;
+        });
+    }
 
     gulp.task('inline', function () {
         return gulp.src(entries, {base: config.srcPath})
