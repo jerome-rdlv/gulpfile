@@ -30,16 +30,18 @@ function define() {
         });
     }
 
-    gulp.task('inline', function () {
+    gulp.task('inline', function (cb) {
+        if (entries.length === 0) { cb(); return null; };
         return gulp.src(entries, {base: config.srcPath})
-            // .pipe(bundler())
-            // .pipe(buffer())
+        // .pipe(bundler())
+        // .pipe(buffer())
             .pipe(uglify())
             .pipe(gulp.dest(config.distPath)).pipe(touch())
             .pipe(browserSync.stream());
     });
 
-    gulp.task('watch:inline', function () {
+    gulp.task('watch:inline', function (cb) {
+        if (entries.length === 0) { cb(); return null; };
         return gulp.watch(entries, {base: config.srcPath}, gulp.parallel('inline'));
     });
 }
