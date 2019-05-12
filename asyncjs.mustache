@@ -1,0 +1,31 @@
+<script>
+    (function () {
+        function load() {
+            var asyncs = {{{asyncs}}};
+            for (var i = 0; i < asyncs.length; ++i) {
+                var node = document.createElement(asyncs[i].type);
+                for (var attr in asyncs[i].atts) {
+                    if (asyncs[i].atts.hasOwnProperty(attr)) {
+                        node.setAttribute(attr, asyncs[i].atts[attr]);
+                    }
+                }
+                if (asyncs[i].type === 'script') {
+                    document.body.appendChild(node);
+                }
+                else if (asyncs[i].type === 'link') {
+                    document.head.appendChild(node);
+                }
+                else if (asyncs[i].type === 'iframe') {
+                    var wrapper = document.getElementById(asyncs[i].id);
+                    wrapper.parentNode.insertBefore(node, wrapper);
+                    wrapper.parentNode.removeChild(wrapper);
+                }
+            }
+        }
+        if (window.addEventListener)
+            window.addEventListener("load", load, false);
+        else if (window.attachEvent)
+            window.attachEvent("onload", load);
+        else window.onload = load;
+    })();
+</script>

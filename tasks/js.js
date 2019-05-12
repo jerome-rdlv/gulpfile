@@ -1,32 +1,34 @@
-/*global config*/
-if (config.tasks.js) {
-    define()
-}
+module.exports = function (config) {
 
-function define() {
+    if (!config.tasks.js || !config.tasks.js.length) {
+        return false;
+    }
+
     const
-        browserSync = require('browser-sync').get('bs'),
+        browserSync = require('../lib/browsersync'),
         // eslint = require('gulp-eslint'),
         gulp = require('gulp'),
         gulpif = require('gulp-if'),
         named = require('vinyl-named'),
         touch = require('../lib/touch'),
         terser = require('gulp-terser'),
-        webpack = require('webpack-stream')
-    
+        webpack = require('webpack-stream');
 
-    gulp.task('js', function () {
+    const task = function () {
 
-        let src = []
-        if (config.entries.length) {
-            for (let i = 0; i < config.entries.length; ++i) {
-                src.push(config.srcPath + config.assetsDir + config.entries[i])
-            }
+        let src;
+        if (config.tasks.js.length) {
+            src = config.tasks.js.map(function (entry) {
+                return config.srcPath + config.assetsDir + entry;
+            });
         } else {
-            src.push(config.srcPath + config.assetsDir + 'js/*.js')
+            src = [config.srcPath + config.assetsDir + 'js/*.js'];
         }
 
-        return gulp.src(src, {base: config.srcPath})
+        return gulp.src(src, {
+            base: config.srcPath,
+            sourcemaps: true,
+        })
         // .pipe(eslint())
         // .pipe(eslint.format())
             .pipe(named())
@@ -59,9 +61,26 @@ function define() {
                 }
             }))
             .pipe(gulpif(config.production, terser()))
-            .pipe(gulp.dest(config.distPath)).pipe(touch())
-            .pipe(gulp.dest(config.varPath)).pipe(touch())
-            .pipe(browserSync.stream())
-            
-    })
-}
+            .pipe(gulp.dest(config.distPath, {
+                sourcemaps: true
+            })).pipe(touch())
+            .pipe(browserSync.stream());
+    };
+
+    const watcher = gulp.series(
+        function setWatchTrue(done) {
+            global.watch = true;
+            done();
+        },
+        task
+        // watching is done by WebPack when global.watch is true
+        // function watchJs() {
+        //     return gulp.watch(config.srcPath + config.assetsDir + 'js/*.js', gulp.parallel('js'));
+        // }
+    );
+
+    return {
+        task: task,
+        watch: watcher
+    };
+};

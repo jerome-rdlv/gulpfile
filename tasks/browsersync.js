@@ -1,20 +1,25 @@
-/*global config*/
-if (!config.tasks.browsersync) return;
+module.exports = function (config) {
 
-if (!config.url.length) {
-    // eslint-disable-next-line no-console
-    console.error('You must configure project URL for browserSync to work');
-    process.exit(1);
-}
+    if (!config.tasks.browsersync) {
+        return false;
+    }
 
-const
-    browserSync = require('browser-sync').get('bs'),
-    gulp = require('gulp')
-;
+    if (!config.url.length) {
+        // eslint-disable-next-line no-console
+        throw 'You must configure project URL for browserSync to work';
+    }
 
-gulp.task('browsersync', function () {
-    return browserSync.init({
-        proxy: config.url,
-        open: false,
-    });
-});
+    const
+        browserSync = require('../lib/browsersync'),
+        gulp = require('gulp')
+    ;
+
+    // return the task
+    return function () {
+        return browserSync.init({
+            proxy: config.url,
+            open: false,
+        });
+    };
+};
+

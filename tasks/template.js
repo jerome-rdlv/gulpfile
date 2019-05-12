@@ -1,277 +1,361 @@
-/*global config*/
-const
-    addUrlParams = require('../lib/add-url-params'),
-    cacheBustHtmlRefs = require('../lib/cachebust-html-refs'),
-    cheerio = require('cheerio'),
-    concat = require('gulp-concat'),
-    fs = require('fs'),
-    gulp = require('gulp'),
-    htmlBeautify = require('gulp-html-beautify'),
-    htmlmin = require('gulp-htmlmin'),
-    mustache = require('mustache'),
-    touch = require('../lib/touch'),
-    through = require('through2')
+module.exports = function (config) {
 
+    if (!config.tasks.template || !config.tasks.template.length) {
+        return false;
+    }
 
-function generateHtml() {
-    return through.obj(function (file, encoding, callback) {
-        const $ = cheerio.load(file.contents.toString(encoding), config.cheerioParserHtmlOptions)
+    const
+        addUrlParams = require('../lib/add-url-params'),
+        browserSync = require('../lib/browsersync'),
+        cacheBustHtmlRefs = require('../lib/cachebust-html-refs'),
+        cheerio = require('cheerio'),
+        concat = require('gulp-concat'),
+        crypto = require('crypto'),
+        fs = require('fs'),
+        gulp = require('gulp'),
+        htmlBeautify = require('gulp-html-beautify'),
+        htmlmin = require('gulp-htmlmin'),
+        mustache = require('mustache'),
+        path = require('path'),
+        touch = require('../lib/touch'),
+        through = require('through2');
 
-        // build nav menu from page’s sections
-        const $menu = $('.Nav-menu')
-        $('section[data-title]').each(function () {
-            const $section = $(this)
-            const $link = $('<a></a>')
-                .attr('href', '#' + $section.attr('id'))
-                .addClass('Nav-link')
-                .text($section.data('title'))
-            const $item = $('<li></li>')
-                .addClass('Nav-item')
-            $item.append($link)
-            $menu.append($item)
-        })
+    const php = {};
+    const generators = {};
 
-        // svg include
-        $('svg[data-src]').replaceWith(function () {
-            const $placeholder = $(this)
+    function phpStash() {
+        return through.obj(function (file, encoding, callback) {
+            if (file.extname === '.php') {
+
+                php[file.path] = {};
+
+                file.contents = Buffer.from(
+                    file.contents.toString(encoding).replace(
+                        /<\?php\s.*?\s\?>/gms,
+                        function (m) {
+                            const hash = crypto.createHash('sha1').update(m).digest('hex');
+                            php[file.path][hash] = m;
+                            return `<!-- php:${hash} -->`;
+                        }
+                    ),
+                    encoding
+                );
+            }
+
+            this.push(file);
+            callback();
+        });
+    }
+
+    function phpPop() {
+        return through.obj(function (file, encoding, callback) {
+            if (file.extname === '.php' && php[file.path]) {
+                file.contents = Buffer.from(
+                    file.contents.toString(encoding).replace(
+                        /(?:<|&lt;)!-- php:([a-z0-9]+) --(?:>|&gt;)/g,
+                        function (m, hash) {
+                            if (!php[file.path][hash]) {
+                                console.error(`Can not find hash ${hash} for file ${file.path} in phpPop.`);
+                            }
+                            const code = php[file.path][hash];
+                            delete php[file.path][hash];
+                            return code;
+                        }
+                    ),
+                    encoding
+                );
+
+                // should not have any properties left
+                for (hash in php[file.path]) {
+                    if (php[file.path].hasOwnProperty(hash)) {
+                        console.error(`Some PHP tags have not been popped for file ${file.path}:`, php[file.path]);
+                        break;
+                    }
+                }
+            }
+
+            this.push(file);
+            callback();
+        });
+    }
+
+    function generateHtml() {
+        return through.obj(function (file, encoding, callback) {
+            const $ = cheerio.load(file.contents.toString(encoding), config.cheerioParserHtmlOptions);
+
+            // svg include
+            $('svg[data-src]').replaceWith(function () {
+                const $placeholder = $(this);
+                try {
+                    const filepath = $(this).data('src');
+                    return $('<noscript></noscript>')
+                        .attr('data-class', $placeholder.attr('class'))
+                        .attr('data-svg', addUrlParams(filepath, {
+                            t: fs.statSync(config.varPath + '/' + filepath).mtime.getTime()
+                        }));
+
+                } catch (e) {
+                    callback(e);
+                }
+                return $placeholder;
+            });
+
+            if (generators[file.path] instanceof Function) {
+                generators[file.path]($);
+            }
+
+            file.contents = Buffer.from($.xml(), 'utf8');
+            this.push(file);
+
+            callback();
+        });
+    }
+
+    function inlineAssets() {
+        return through.obj(function (file, encoding, callback) {
+            const $ = cheerio.load(file.contents.toString(encoding), config.cheerioParserHtmlOptions);
+
+            function resolveResourceUri(filepath, uri) {
+                if (uri.match(/^(https?:)?\/\//)) {
+                    return uri;
+                }
+                return path.relative(
+                    path.dirname(file.path.replace(config.srcPath, config.distPath)),
+                    path.resolve(path.dirname(filepath), uri)
+                );
+            }
+
+            // styles
             try {
-                const path = $(this).data('src')
-                return $('<noscript></noscript>')
-                    .attr('data-class', $placeholder.attr('class'))
-                    .attr('data-svg', addUrlParams(path, {
-                        t: fs.statSync(config.varPath + '/' + path).mtime.getTime()
-                    }))
-                    
+                $('link[data-inline]').each(function () {
+                    const $link = $(this);
+                    const filepath = config.distPath + $link.attr('href');
+                    if (fs.existsSync(filepath)) {
+                        const $style = $('<style></style>');
+                        $style.text(
+                            fs.readFileSync(filepath, 'utf8')
+                                .replace(/^@charset .*?;/i, '')
+                                .replace(/(?:\b|\s)url\((['"]?)(.*?)\1\)/mg, function (m, quote, src) {
+                                    return `url(${quote}${resolveResourceUri(filepath, src)}${quote})`;
+                                })
+                        );
+                        $link.after($style);
+                        $link.remove();
+                    } else {
+                        console.warn(`file ${filepath} does not exist for inlining in ${file.basename}.`);
+                    }
+                });
             } catch (e) {
-                callback(e)
+                callback(e);
             }
-            return $placeholder
+
+            // scripts
+            try {
+                $('script[data-inline]').each(function () {
+                    const $script = $(this);
+                    const filepath = config.distPath + $script.attr('src');
+                    if (fs.existsSync(filepath)) {
+                        $script
+                            .text(fs.readFileSync(filepath, 'utf8'))
+                            .removeAttr('type')
+                            .removeAttr('src');
+                    } else {
+                        console.warn(`file ${filepath} does not exist for inlining in ${file.basename}.`);
+                    }
+                });
+            } catch (e) {
+                callback(e);
+            }
+
+            file.contents = Buffer.from($.xml(), 'utf8');
+            this.push(file);
+
+            callback();
+        });
+    }
+
+    function mergeAssets() {
+        return through.obj(function (file, encoding, callback) {
+            const self = this;
+            const $ = cheerio.load(file.contents.toString(encoding), config.cheerioParserHtmlOptions);
+
+            const promises = [];
+
+            // merge scripts
+            const $scripts = $('body script[data-merge]');
+            const scripts = $scripts.map(function () {
+                const filepath = $(this).attr('src');
+                return (/^vendor/.test(filepath) ? config.srcPath : config.varPath) + filepath;
+            }).toArray();
+
+            if (scripts.length) {
+                promises.push(
+                    gulp.src(scripts)
+                        .pipe(concat('combined.js'))
+                        .pipe(gulp.dest(config.distPath + 'js')).pipe(touch())
+                );
+
+                const $scriptCombined = $('<script async></script>')
+                    .attr('src', 'js/combined.js')
+                    .addClass('async');
+
+                $scripts.last().after($scriptCombined);
+                $scripts.remove();
+            }
+
+            // merge styles
+            const $links = $('head link.merge[rel="stylesheet"]');
+            const links = $links.map(function () {
+                return config.varPath + $(this).attr('href');
+            }).toArray();
+
+            if (links.length) {
+
+                promises.push(
+                    gulp.src(links)
+                        .pipe(concat('combined.css'))
+                        .pipe(gulp.dest(config.distPath + 'css')).pipe(touch())
+                );
+
+                const $linkCombined = $('<link />')
+                    .addClass($links.attr('class'))
+                    .attr('rel', 'stylesheet')
+                    .attr('href', 'css/combined.css');
+
+                $links.last().after($linkCombined);
+                $links.remove();
+            }
+
+            return Promise.all(promises).then(function () {
+
+                file.contents = Buffer.from($.xml(), 'utf8');
+                self.push(file);
+
+                callback();
+            });
+        });
+    }
+
+    function asyncAssets() {
+        return through.obj(function (file, encoding, callback) {
+            const $ = cheerio.load(file.contents.toString(encoding), config.cheerioParserHtmlOptions);
+
+            const asyncs = $('head link.async, script.async, iframe.async, svg image').map(function () {
+                const $item = $(this).removeClass('async');
+                if ($item.is('script')) {
+                    $item.remove();
+                    return {
+                        type: 'script',
+                        atts: $item.attr()
+                    };
+                } else if ($item.is('link')) {
+                    return {
+                        type: 'link',
+                        atts: $item.attr()
+                    };
+                } else if ($item.is('iframe')) {
+                    const id = 'iframe-' + crypto.createHash('sha1')
+                        .update($item.attr('src'))
+                        .digest('hex')
+                        .substr(0, 8);
+                    const $wrapper = $('<div></div>')
+                        .attr('id', id)
+                        .css('display', 'none');
+                    $item.after($wrapper);
+                    $item.remove();
+                    return {
+                        type: $item[0].tagName,
+                        id: id,
+                        atts: $item.attr()
+                    };
+                }
+                // else if ($item.is('image')) {
+                //     $item.attr('data-href', $item.attr('xlink:href'));
+                //     $item.removeAttr('xlink:href');
+                // }
+            }).toArray();
+
+            if (asyncs.length) {
+
+                // styles
+                const $links = $('head link.async');
+                if ($links.length) {
+                    // noscript include for styles
+                    const $noscript = $('<noscript></noscript>').append($links);
+                    $('head').append($noscript);
+                }
+
+                // scripts
+                const template = fs.readFileSync(__dirname + '/../asyncjs.mustache', 'utf8');
+                $('body').append(mustache.render(template, {
+                    asyncs: JSON.stringify(asyncs)
+                }));
+
+                file.contents = Buffer.from($.xml(), 'utf8');
+            }
+
+            this.push(file);
+            callback();
+        });
+    }
+
+    function getSrc() {
+        return config.tasks.template.map(function (template) {
+            if (template instanceof Object) {
+                if (!template.file) {
+                    throw `You must set \`file\` property if template is an object.`;
+                }
+                const filepath = config.srcPath + template.file;
+                if (template.generate instanceof Function) {
+                    generators[filepath] = template.generate;
+                }
+                return filepath;
+            }
+            return config.srcPath + template;
+        });
+    }
+
+    const task = function () {
+
+        return gulp.src(getSrc(), {
+            base: config.srcPath,
         })
+            .pipe(phpStash())
+            .pipe(generateHtml())
+            // .pipe(htmlBeautify({
+            //     indentSize: 4,
+            //     indent_char: ' ',
+            //     wrap_line_length: 120
+            // }))
+            .pipe(inlineAssets())
+            .pipe(mergeAssets())
+            .pipe(cacheBustHtmlRefs())
+            .pipe(asyncAssets())
+            // .pipe(htmlmin({
+            //     collapseWhitespace: false,
+            //     collapseBooleanAttributes: true,
+            //     decodeEntities: true,
+            //     html5: true
+            // }))
+            .pipe(phpPop())
+            .pipe(gulp.dest(config.distPath)).pipe(touch())
+            .pipe(browserSync.stream());
+    };
 
-        // build equipe items
-        const $cols = $('.Equipe-col')
-        const $tpl = $('.Equipe-item')
+    const watcher = function () {
 
-        const alunites = JSON.parse(fs.readFileSync(config.srcPath + '/alunites.json', 'utf8'))
-        for (let i = 0; i < alunites.length; ++i) {
-            const $item = $tpl.clone()
-            if (alunites[i].photo.length) {
-                $item.find('.Equipe-photo').css('background-image', 'url(\'' + alunites[i].photo + '\')')
-            }
-            $item.find('.Equipe-firstname').text(alunites[i].first)
-            $item.find('.Equipe-lastname').text(alunites[i].last)
-            $item.find('.Equipe-email')
-                .attr('href', 'mailto:' + alunites[i].email)
-                .text(alunites[i].email)
-            $item.find('.Equipe-likes').append(alunites[i].like)
-            $item.find('.Equipe-dislikes').append(alunites[i].dislike)
+        let src = getSrc();
 
-            $item.attr('id', 'equipe-item-' + i)
+        src.push(
+            config.varPath + '*',
+            config.varPath + '**/*',
+        );
 
-            if (i < alunites.length / 2) {
-                $cols.first().append($item)
-            } else {
-                $cols.last().append($item)
-            }
-        }
-        $tpl.remove()
+        return gulp.watch(src, task);
+    };
 
-        file.contents = Buffer.from($.xml(), 'utf8')
-        this.push(file)
-
-        callback()
-    })
-}
-
-
-function inlineAssets() {
-    return through.obj(function (file, encoding, callback) {
-        const $ = cheerio.load(file.contents.toString(encoding), config.cheerioParserHtmlOptions)
-
-        // styles
-        try {
-            $('link.inline').each(function () {
-                const $link = $(this)
-                const $style = $('<style></style>')
-                    .attr('type', 'text/css')
-                $style.text(fs.readFileSync(config.varPath + $link.attr('href'), 'utf8').replace(/^@charset .*?;/i, ''))
-                $link.after($style)
-                $link.remove()
-            })
-        } catch (e) {
-            callback(e)
-        }
-
-        // scripts
-        try {
-            $('script.inline').each(function () {
-                const $script = $(this)
-                $script
-                    .text(fs.readFileSync(config.varPath + $script.attr('src'), 'utf8'))
-                    .removeAttr('src')
-                    .removeClass('inline')
-                
-            })
-        } catch (e) {
-            callback(e)
-        }
-
-        file.contents = Buffer.from($.xml(), 'utf8')
-        this.push(file)
-
-        callback()
-    })
-}
-
-function mergeAssets() {
-    return through.obj(function (file, encoding, callback) {
-        const self = this
-        const $ = cheerio.load(file.contents.toString(encoding), config.cheerioParserHtmlOptions)
-
-        const promises = []
-
-        // merge scripts
-        const $scripts = $('body script.merge')
-        const scripts = $scripts.map(function () {
-            const path = $(this).attr('src')
-            return (/^vendor/.test(path) ? config.srcPath : config.varPath) + path
-        }).toArray()
-
-        promises.push(
-            gulp.src(scripts)
-                .pipe(concat('combined.js'))
-                .pipe(gulp.dest(config.distPath + 'js')).pipe(touch())
-        )
-
-        const $scriptCombined = $('<script async></script>')
-            .attr('src', 'js/combined.js')
-            .addClass('async')
-
-        $scripts.last().after($scriptCombined)
-        $scripts.remove()
-
-        // merge styles
-        const $links = $('head link.merge[rel="stylesheet"]')
-        const links = $links.map(function () {
-            return config.varPath + $(this).attr('href')
-        }).toArray()
-
-        promises.push(
-            gulp.src(links)
-                .pipe(concat('combined.css'))
-                .pipe(gulp.dest(config.distPath + 'css')).pipe(touch())
-        )
-
-        const $linkCombined = $('<link />')
-            .addClass($links.attr('class'))
-            .attr('rel', 'stylesheet')
-            .attr('href', 'css/combined.css')
-
-        $links.last().after($linkCombined)
-        $links.remove()
-
-        return Promise.all(promises).then(function () {
-
-            file.contents = Buffer.from($.xml(), 'utf8')
-            self.push(file)
-
-            callback()
-        })
-    })
-}
-
-function asyncAssets() {
-    return through.obj(function (file, encoding, callback) {
-        const $ = cheerio.load(file.contents.toString(encoding), config.cheerioParserHtmlOptions)
-
-        // styles
-        const $links = $('head link.async')
-
-        // noscript include for styles
-        const $noscript = $('<noscript></noscript>').append($links)
-        $('head').append($noscript)
-
-        const asyncs = $('head link.async, script.async, iframe.async, svg image').map(function () {
-            const $item = $(this).removeClass('async')
-            if ($item.is('script')) {
-                $item.remove()
-                return {
-                    type: 'script',
-                    atts: $item.attr()
-                }
-            } else if ($item.is('link')) {
-                return {
-                    type: 'link',
-                    atts: $item.attr()
-                }
-            } else if ($item.is('iframe')) {
-                const id = 'iframe-' + crypto.createHash('sha1')
-                    .update($item.attr('src'))
-                    .digest('hex')
-                    .substr(0, 8)
-                const $wrapper = $('<div></div>')
-                    .attr('id', id)
-                    .css('display', 'none')
-                $item.after($wrapper)
-                $item.remove()
-                return {
-                    type: $item[0].tagName,
-                    id: id,
-                    atts: $item.attr()
-                }
-            }
-            // else if ($item.is('image')) {
-            //     $item.attr('data-href', $item.attr('xlink:href'));
-            //     $item.removeAttr('xlink:href');
-            // }
-        }).toArray()
-
-        // scripts
-        const template = fs.readFileSync(config.srcPath + '/asyncjs.mustache', 'utf8')
-        $('body').append(mustache.render(template, {
-            asyncs: JSON.stringify(asyncs)
-        }))
-
-
-        file.contents = Buffer.from($.xml(), 'utf8')
-        this.push(file)
-
-        callback()
-    })
-}
-
-gulp.task('template', function () {
-    return gulp.src(config.srcPath + '/index.html')
-    // insert inline css for header
-        .pipe(generateHtml())
-        .pipe(htmlBeautify({
-            indentSize: 4,
-            indent_char: ' ',
-            wrap_line_length: 120
-        }))
-        .pipe(inlineAssets())
-        .pipe(mergeAssets())
-        .pipe(cacheBustHtmlRefs())
-        .pipe(asyncAssets())
-        .pipe(htmlmin({
-            collapseWhitespace: false,
-            collapseBooleanAttributes: true,
-            decodeEntities: true,
-            html5: true
-        }))
-        .pipe(gulp.dest(config.distPath))
-        .pipe(touch())
-        
-})
-
-gulp.task('template:watch', function () {
-    return gulp.watch([
-        config.srcPath + 'index.html',
-        config.varPath + 'css/*',
-        config.varPath + 'js/*',
-        config.varPath + 'svg/*.svg',
-        config.srcPath + 'thumbs.json',
-        config.srcPath + 'alunites.json',
-        config.srcPath + 'asyncjs.mustache'
-    ], gulp.parallel('template'))
-})
+    return {
+        task: task,
+        watch: watcher
+    };
+};
