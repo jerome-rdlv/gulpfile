@@ -19,7 +19,6 @@ module.exports = function (config) {
         svgToSymbol = require('../lib/svg-to-symbol'),
         touch = require('../lib/touch');
 
-
     function svgminCallback(file) {
         const prefix = 'i' + crypto.createHash('sha1')
             .update(path.basename(file.relative, path.extname(file.relative)))
@@ -60,8 +59,6 @@ module.exports = function (config) {
         return {plugins: plugins};
     }
 
-    
-    
     const svg = function () {
         return gulp.src(config.srcPath + config.assetsDir + 'svg/*.svg', {base: config.srcPath})
             .pipe(cacheBustSvgRefs())
