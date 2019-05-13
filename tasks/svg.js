@@ -13,6 +13,7 @@ module.exports = function (config) {
         crypto = require('crypto'),
         gulp = require('gulp'),
         path = require('path'),
+        rename = require('gulp-rename'),
         svgmin = require('gulp-svgmin'),
         svgToScss = require('../lib/svg-to-scss'),
         svgToSymbol = require('../lib/svg-to-symbol'),
