@@ -119,8 +119,11 @@ module.exports = function (override) {
             }
         }
     }
-
-    return tasks;
+    
+    return Object.keys(tasks).sort().reduce(function (accumulator, key) {
+        accumulator[key] = tasks[key];
+        return accumulator;
+    }, {});
 
     //
     // gulp.task('default', gulp.parallel(tasks));
