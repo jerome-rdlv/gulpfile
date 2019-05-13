@@ -11,6 +11,7 @@ module.exports = function (config) {
     const
         browserSync = require('../lib/browsersync'),
         gulp = require('gulp'),
+        gulpif = require('gulp-if'),
         touch = require('../lib/touch'),
         uglify = require('gulp-uglify');
 
@@ -20,7 +21,7 @@ module.exports = function (config) {
 
     const jsil = function (cb) {
         return gulp.src(src, {base: config.srcPath})
-            .pipe(uglify())
+            .pipe(gulpif(config.production, uglify()))
             .pipe(gulp.dest(config.distPath)).pipe(touch())
             .pipe(browserSync.stream());
     };
