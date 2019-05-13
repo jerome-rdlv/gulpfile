@@ -26,9 +26,7 @@ module.exports = function (config) {
     function phpStash() {
         return through.obj(function (file, encoding, callback) {
             if (file.extname === '.php') {
-
                 php[file.path] = {};
-
                 file.contents = Buffer.from(
                     file.contents.toString(encoding).replace(
                         /<\?php\s.*?\s\?>/gms,
@@ -66,11 +64,8 @@ module.exports = function (config) {
                 );
 
                 // should not have any properties left
-                for (hash in php[file.path]) {
-                    if (php[file.path].hasOwnProperty(hash)) {
-                        console.error(`Some PHP tags have not been popped for file ${file.path}:`, php[file.path]);
-                        break;
-                    }
+                if (Object.keys(php[file.path]).length) {
+                    console.error(`Some PHP tags have not been popped for file ${file.path}:`, php[file.path]);
                 }
             }
 
@@ -105,8 +100,8 @@ module.exports = function (config) {
             }
 
             file.contents = Buffer.from($.xml(), 'utf8');
-            this.push(file);
 
+            this.push(file);
             callback();
         });
     }
@@ -126,50 +121,42 @@ module.exports = function (config) {
             }
 
             // styles
-            try {
-                $('link[data-inline]').each(function () {
-                    const $link = $(this);
-                    const filepath = config.distPath + $link.attr('href');
-                    if (fs.existsSync(filepath)) {
-                        const $style = $('<style></style>');
-                        $style.text(
-                            fs.readFileSync(filepath, 'utf8')
-                                .replace(/^@charset .*?;/i, '')
-                                .replace(/(?:\b|\s)url\((['"]?)(.*?)\1\)/mg, function (m, quote, src) {
-                                    return `url(${quote}${resolveResourceUri(filepath, src)}${quote})`;
-                                })
-                        );
-                        $link.after($style);
-                        $link.remove();
-                    } else {
-                        console.warn(`file ${filepath} does not exist for inlining in ${file.basename}.`);
-                    }
-                });
-            } catch (e) {
-                callback(e);
-            }
+            $('link[data-inline]').each(function () {
+                const $link = $(this);
+                const filepath = config.distPath + $link.attr('href');
+                if (fs.existsSync(filepath)) {
+                    const $style = $('<style></style>');
+                    $style.text(
+                        fs.readFileSync(filepath, 'utf8')
+                            .replace(/^@charset .*?;/i, '')
+                            .replace(/(?:\b|\s)url\((['"]?)(.*?)\1\)/mg, function (m, quote, src) {
+                                return `url(${quote}${resolveResourceUri(filepath, src)}${quote})`;
+                            })
+                    );
+                    $link.after($style);
+                    $link.remove();
+                } else {
+                    console.warn(`file ${filepath} does not exist for inlining in ${file.basename}.`);
+                }
+            });
 
             // scripts
-            try {
-                $('script[data-inline]').each(function () {
-                    const $script = $(this);
-                    const filepath = config.distPath + $script.attr('src');
-                    if (fs.existsSync(filepath)) {
-                        $script
-                            .text(fs.readFileSync(filepath, 'utf8'))
-                            .removeAttr('type')
-                            .removeAttr('src');
-                    } else {
-                        console.warn(`file ${filepath} does not exist for inlining in ${file.basename}.`);
-                    }
-                });
-            } catch (e) {
-                callback(e);
-            }
+            $('script[data-inline]').each(function () {
+                const $script = $(this);
+                const filepath = config.distPath + $script.attr('src');
+                if (fs.existsSync(filepath)) {
+                    $script
+                        .text(fs.readFileSync(filepath, 'utf8'))
+                        .removeAttr('type')
+                        .removeAttr('src');
+                } else {
+                    console.warn(`file ${filepath} does not exist for inlining in ${file.basename}.`);
+                }
+            });
 
             file.contents = Buffer.from($.xml(), 'utf8');
-            this.push(file);
 
+            this.push(file);
             callback();
         });
     }
@@ -227,10 +214,8 @@ module.exports = function (config) {
             }
 
             return Promise.all(promises).then(function () {
-
                 file.contents = Buffer.from($.xml(), 'utf8');
                 self.push(file);
-
                 callback();
             });
         });
@@ -238,62 +223,61 @@ module.exports = function (config) {
 
     function asyncAssets() {
         return through.obj(function (file, encoding, callback) {
-            const $ = cheerio.load(file.contents.toString(encoding), config.cheerioParserHtmlOptions);
-
-            const asyncs = $('head link.async, script.async, iframe.async, svg image').map(function () {
-                const $item = $(this).removeClass('async');
-                if ($item.is('script')) {
-                    $item.remove();
-                    return {
-                        type: 'script',
-                        atts: $item.attr()
-                    };
-                } else if ($item.is('link')) {
-                    return {
-                        type: 'link',
-                        atts: $item.attr()
-                    };
-                } else if ($item.is('iframe')) {
-                    const id = 'iframe-' + crypto.createHash('sha1')
-                        .update($item.attr('src'))
-                        .digest('hex')
-                        .substr(0, 8);
-                    const $wrapper = $('<div></div>')
-                        .attr('id', id)
-                        .css('display', 'none');
-                    $item.after($wrapper);
-                    $item.remove();
-                    return {
-                        type: $item[0].tagName,
-                        id: id,
-                        atts: $item.attr()
-                    };
-                }
-                // else if ($item.is('image')) {
-                //     $item.attr('data-href', $item.attr('xlink:href'));
-                //     $item.removeAttr('xlink:href');
-                // }
-            }).toArray();
-
-            if (asyncs.length) {
-
-                // styles
-                const $links = $('head link.async');
-                if ($links.length) {
-                    // noscript include for styles
-                    const $noscript = $('<noscript></noscript>').append($links);
-                    $('head').append($noscript);
-                }
-
-                // scripts
-                const template = fs.readFileSync(__dirname + '/../asyncjs.mustache', 'utf8');
-                $('body').append(mustache.render(template, {
-                    asyncs: JSON.stringify(asyncs)
-                }));
-
-                file.contents = Buffer.from($.xml(), 'utf8');
-            }
-
+            // const $ = cheerio.load(file.contents.toString(encoding), config.cheerioParserHtmlOptions);
+            //
+            // const asyncs = $('head link.async, script.async, iframe.async, svg image').map(function () {
+            //     const $item = $(this).removeClass('async');
+            //     if ($item.is('script')) {
+            //         $item.remove();
+            //         return {
+            //             type: 'script',
+            //             atts: $item.attr()
+            //         };
+            //     } else if ($item.is('link')) {
+            //         return {
+            //             type: 'link',
+            //             atts: $item.attr()
+            //         };
+            //     } else if ($item.is('iframe')) {
+            //         const id = 'iframe-' + crypto.createHash('sha1')
+            //             .update($item.attr('src'))
+            //             .digest('hex')
+            //             .substr(0, 8);
+            //         const $wrapper = $('<div></div>')
+            //             .attr('id', id)
+            //             .css('display', 'none');
+            //         $item.after($wrapper);
+            //         $item.remove();
+            //         return {
+            //             type: $item[0].tagName,
+            //             id: id,
+            //             atts: $item.attr()
+            //         };
+            //     }
+            //     // else if ($item.is('image')) {
+            //     //     $item.attr('data-href', $item.attr('xlink:href'));
+            //     //     $item.removeAttr('xlink:href');
+            //     // }
+            // }).toArray();
+            //
+            // if (asyncs.length) {
+            //
+            //     // styles
+            //     const $links = $('head link.async');
+            //     if ($links.length) {
+            //         // noscript include for styles
+            //         const $noscript = $('<noscript></noscript>').append($links);
+            //         $('head').append($noscript);
+            //     }
+            //
+            //     // scripts
+            //     const template = fs.readFileSync(__dirname + '/../asyncjs.mustache', 'utf8');
+            //     $('body').append(mustache.render(template, {
+            //         asyncs: JSON.stringify(asyncs)
+            //     }));
+            // }
+            //
+            // file.contents = Buffer.from($.xml(), 'utf8');
             this.push(file);
             callback();
         });
@@ -315,7 +299,13 @@ module.exports = function (config) {
         });
     }
 
-    const task = function () {
+    function getWatchIgnored() {
+        return config.tasks.template.map(function (template) {
+            return config.distPath + (template instanceof Object ? template.file : template);
+        });
+    }
+
+    const template = function () {
 
         return gulp.src(getSrc(), {
             base: config.srcPath,
@@ -331,31 +321,34 @@ module.exports = function (config) {
             .pipe(mergeAssets())
             .pipe(cacheBustHtmlRefs())
             .pipe(asyncAssets())
-            // .pipe(htmlmin({
-            //     collapseWhitespace: false,
-            //     collapseBooleanAttributes: true,
-            //     decodeEntities: true,
-            //     html5: true
-            // }))
+            .pipe(htmlmin({
+                collapseWhitespace: false,
+                collapseBooleanAttributes: true,
+                decodeEntities: true,
+                html5: true
+            }))
             .pipe(phpPop())
             .pipe(gulp.dest(config.distPath)).pipe(touch())
             .pipe(browserSync.stream());
     };
 
-    const watcher = function () {
+    const watch_template = function () {
 
         let src = getSrc();
+        console.log(getWatchIgnored());
 
         src.push(
-            config.varPath + '*',
-            config.varPath + '**/*',
+            config.distPath + '**/*',
         );
 
-        return gulp.watch(src, task);
+        return gulp.watch(src, {
+            delay: 500,
+            ignored: getWatchIgnored()
+        }, template);
     };
 
-    return {
-        task: task,
-        watch: watcher
-    };
+    return [
+        template,
+        watch_template
+    ];
 };

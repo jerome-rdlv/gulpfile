@@ -17,7 +17,7 @@ module.exports = function (config) {
         touch = require('../lib/touch');
 
 
-    const task = function () {
+    const scss = function () {
         return gulp.src(config.srcPath + config.assetsDir + 'scss/*.scss', {base: config.srcPath})
         // .pipe(changed(config.varPath))
             .pipe(sass({
@@ -28,28 +28,26 @@ module.exports = function (config) {
                 path.dirname = path.dirname.replace('scss', 'css');
             }))
             .pipe(autoprefixer(...config.tasks.scss.autoprefixer))
-            .pipe(browserSync.stream())
             .pipe(cacheBustCssRefs(config.distPath + config.assetsDir + 'css/'))
             .pipe(gulpif(config.production, cssnano({
                 autoprefixer: false,
                 zindex: false
             })))
-            .pipe(gulp.dest(config.varPath)).pipe(touch())
-            .pipe(gulp.dest(config.distPath)).pipe(touch());
-
+            .pipe(gulp.dest(config.distPath)).pipe(touch())
+            .pipe(browserSync.stream());
     };
 
-    const watcher = function () {
+    const watch_scss = function () {
         return gulp.watch([
             config.srcPath + config.assetsDir + 'scss/*.scss',
             config.srcPath + config.assetsDir + 'scss/**/*.scss',
             config.varPath + '_icon-svg.scss'
-        ], gulp.parallel(task));
+        ], scss);
     };
 
-    return {
-        task: task,
-        watch: watcher
-    };
+    return [
+        scss,
+        watch_scss
+    ];
 
 };

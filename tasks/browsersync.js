@@ -1,6 +1,6 @@
 module.exports = function (config) {
 
-    if (!config.tasks.browsersync) {
+    if (config.production || !config.tasks.browsersync) {
         return false;
     }
 
@@ -15,7 +15,7 @@ module.exports = function (config) {
     ;
 
     // return the task
-    return function () {
+    return function watch_browsersync() {
         return browserSync.init({
             proxy: config.url,
             open: false,

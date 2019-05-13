@@ -30,7 +30,7 @@ module.exports = function (config) {
     const imgGlob = `img/**/*.+${extGlob}`;
     const imgSrc = config.srcPath + config.assetsDir + imgGlob;
 
-    const mainTask = function () {
+    const img = function () {
         return gulp.src(imgSrc, {base: config.srcPath})
             .pipe(changed(config.distPath))
             .pipe(imageResize({
@@ -41,7 +41,7 @@ module.exports = function (config) {
 
     };
 
-    let subtasks = [mainTask];
+    let subtasks = [img];
 
     let thumbTasks = thumbs.map(function (item) {
         const name = 'img_resize' + item.suffix;
@@ -73,12 +73,12 @@ module.exports = function (config) {
         subtasks.push.apply(null, thumbTasks);
     }
 
-    const watcher = function () {
+    const watch_img = function () {
         return gulp.watch(imgSrc, gulp.parallel(subtasks));
     };
 
-    return {
-        task: mainTask,
-        watcher: watcher,
-    };
+    return [
+        img,
+        watch_img,
+    ];
 };

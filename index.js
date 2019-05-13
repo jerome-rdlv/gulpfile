@@ -50,26 +50,16 @@ module.exports = function (override) {
     let defaultTask = [];
     let defaultWatcher = [];
 
-    // create browserSync instance
-    // require('browser-sync').create('bs');
-
     const tasks = glob.sync(__dirname + '/tasks/*.js').reduce(function (loaded, file) {
         const module = require(file)(config);
         const name = path.basename(file).replace(/\.[^.]+/, '');
 
         if (module instanceof Function) {
-            loaded[name] = module;
-            defaultTask.push(module);
-        } else if (module instanceof Object) {
-            Object.keys(module).forEach(function (key) {
-                loaded[key === 'task' ? name : key + ':' + name] = module[key];
-                switch (key) {
-                    case 'task':
-                        defaultTask.push(module[key]);
-                        break;
-                    case 'watch':
-                        defaultWatcher.push(module[key]);
-                        break;
+            loaded[module.name ? module.name : name] = module;
+        } else if (module instanceof Array) {
+            module.forEach(function (task) {
+                if (task instanceof Function) {
+                    loaded[task.name ? task.name : name] = task;
                 }
             });
         }
@@ -77,82 +67,56 @@ module.exports = function (override) {
         return loaded;
     }, {});
 
-    // if (config.tasks.browsersync) {
-    //
-    //     const {task} = require('./tasks/browsersync')(config);
-    //
-    //     tasks['browsersync'] = task;
-    //     defaultTask.push(task);
-    // }
-    //
-    // if (config.tasks.static && config.tasks.static.length) {
-    //     const {task, watcher} = require('./tasks/static')(config);
-    //     tasks['static'] = task;
-    //     tasks['watch:static'] = watcher;
-    //     defaultTask.push(task);
-    //     defaultWatcher.push(watcher);
-    // }
-    //
-    // if (config.tasks.img) {
-    //     const {task, watcher} = require('./tasks/img')(config);
-    //     tasks['img'] = task;
-    //     tasks['watch:img'] = watcher;
-    //     defaultTask.push(task);
-    //     defaultWatcher.push(watcher);
-    // }
-    //
-    // if (config.tasks.font) {
-    //     const {task, watcher} = require('./tasks/font')(config);
-    //     tasks.push('font');
-    //     watchers.push('watch:font');
-    // }
-    //
-    // if (config.tasks.scss) {
-    //     const {task, watcher} = require('./tasks/scss')(config);
-    // }
+    if (Object.keys(tasks).length) {
 
-    // if (config.tasks.svg) {
-    //     if (config.tasks.scss) {
-    //         tasks.push(gulp.series(
-    //             'svg',
-    //             gulp.parallel(
-    //                 'svg-symbol',
-    //                 gulp.series('svg-scss', 'scss')
-    //             )
-    //         ));
-    //     } else {
-    //         tasks.push(gulp.series('svg', 'svg-symbol'));
-    //     }
-    //     watchers.push('watch:svg');
-    //     watchers.push('watch:svg-var');
-    // } else if (config.tasks.scss) {
-    //     tasks.push('scss');
-    // }
+        let levels = [
+            [
+                tasks['copy'],
+                tasks['symlink'],
+                tasks['thumb'],
+                tasks['svg'],
+                tasks['img'],
+            ],
+            [
+                tasks['svg_symbol'],
+                tasks['svg_scss'],
+            ],
+            [
+                tasks['jsil'],
+                tasks['js'],
+                tasks['scss'],
+            ],
+            [
+                tasks['template'],
+            ]
+        ];
 
-    // if (config.tasks.scss) {
-    //     watchers.push('watch:scss');
-    // }
-    // if (config.tasks.js) {
-    //     tasks.push('js');
-    //     watchers.push('watch:js');
-    //
-    //     tasks.push('inline');
-    //     watchers.push('watch:inline');
-    // }
-    //
-    // if (config.templates && config.templates.length && config.tasks.template) {
-    //     tasks.push('template');
-    //     watchers.push('watch:template');
-    // }
+        levels = levels
+            .map(function (tasks) {
+                tasks = tasks.filter(function (task) {
+                    return task instanceof Function;
+                });
+                return tasks.length ? gulp.parallel.apply(null, tasks) : null;
+            })
+            .filter(function (tasks) {
+                return tasks !== null;
+            });
 
-    if (defaultTask.length) {
-        tasks['default'] = gulp.parallel(defaultTask);
+        if (levels.length) {
+            tasks['default'] = gulp.series.apply(null, levels);
 
-        if (defaultWatcher.length) {
-            tasks['watch'] = gulp.series(
-                tasks.default,
-                gulp.parallel(defaultWatcher)
-            );
+            const watchers = Object.keys(tasks).reduce(function (accumulator, key) {
+                if (/^watch_/.test(tasks[key].name)) {
+                    accumulator.push(tasks[key]);
+                }
+                return accumulator;
+            }, []);
+            if (watchers.length) {
+                tasks['watch_default'] = gulp.series(
+                    tasks['default'],
+                    gulp.parallel.apply(null, watchers)
+                );
+            }
         }
     }
 

@@ -1,17 +1,18 @@
 module.exports = function (config) {
     const
         gulp = require('gulp'),
-        clean = require('gulp-clean');
+        gulpClean = require('gulp-clean');
 
-    return function () {
+    return function clean() {
         return gulp.src(
             [
-                config.distPath + '*',
-                config.varPath + '*'
+                config.distPath,
+                config.varPath
             ], {
+                allowEmpty: true,
                 base: config.srcPath,
                 read: false
             }
-        ).pipe(clean({force: true}));
+        ).pipe(gulpClean({force: true}));
     };
 };

@@ -18,19 +18,19 @@ module.exports = function (config) {
         return config.srcPath + config.assetsDir + entry;
     });
 
-    const task = function (cb) {
+    const jsil = function (cb) {
         return gulp.src(src, {base: config.srcPath})
             .pipe(uglify())
             .pipe(gulp.dest(config.distPath)).pipe(touch())
             .pipe(browserSync.stream());
     };
 
-    const watcher = function (cb) {
-        return gulp.watch(src, {base: config.srcPath}, gulp.parallel('inline'));
+    const watch_jsil = function (cb) {
+        return gulp.watch(src, {base: config.srcPath}, jsil);
     };
 
-    return {
-        task: task,
-        watch: watcher
-    };
+    return [
+        jsil,
+        watch_jsil
+    ];
 };

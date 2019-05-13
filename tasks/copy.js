@@ -13,7 +13,7 @@ module.exports = function (config) {
         return config.srcPath + resource;
     });
 
-    const task = function () {
+    const task = function copy() {
         return gulp.src(resources, {
             allowEmpty: true,
             base: config.srcPath
@@ -23,10 +23,10 @@ module.exports = function (config) {
             .pipe(touch());
     };
 
-    return {
-        task: task,
-        watcher: function () {
+    return [
+        task,
+        function watch_copy() {
             return gulp.watch(resources, task);
         }
-    };
+    ];
 };

@@ -57,7 +57,7 @@ module.exports = function (config) {
         return {plugins: plugins};
     }
 
-    const task = function () {
+    const svg = function () {
         return gulp.src(config.srcPath + config.assetsDir + 'svg/*.svg', {base: config.srcPath})
             .pipe(cacheBustSvgRefs())
             .pipe(changed(config.varPath))
@@ -69,7 +69,7 @@ module.exports = function (config) {
     };
 
     // svg availability in SCSS
-    const scssTask = function () {
+    const svg_scss = function () {
         return gulp.src(config.varPath + config.assetsDir + 'svg/*.svg')
             .pipe(svgToScss({
                 template: config.srcPath + 'svg.scss.mustache',
@@ -80,7 +80,7 @@ module.exports = function (config) {
     };
 
     // svg availability for inclusion as inline symbol in html
-    const symbolTask = function () {
+    const svg_symbol = function () {
         return gulp.src(config.varPath + config.assetsDir + 'svg/*.svg', {base: config.varPath})
             .pipe(changed(config.distPath, {extension: '.symbol.svg'}))
             .pipe(svgToSymbol())
@@ -92,27 +92,27 @@ module.exports = function (config) {
 
     };
 
-    const watcher = function () {
+    const watch_svg = function () {
         return gulp.parallel(
             // prepare svg and output to img dir
             gulp.watch([
                 config.varPath + 'svg/*.svg',
                 config.srcPath + config.assetsDir + 'svg/*.svg',
                 config.srcPath + config.assetsDir + 'img/*'
-            ], task),
+            ], svg),
             // create symbols and update scss lib
             gulp.watch([
                 config.varPath + config.assetsDir + 'svg/*.svg',
                 config.srcPath + 'svg.scss.mustache'
-            ], gulp.parallel(scssTask, symbolTask))
+            ], gulp.parallel(svg_scss, svg_symbol))
         );
     };
 
-    return {
-        task: task,
-        watch: watcher,
-        scss: scssTask,
-        symbol: symbolTask
-    };
+    return [
+        svg,
+        watch_svg,
+        svg_scss,
+        svg_symbol
+    ];
 }
 ;

@@ -14,7 +14,7 @@ module.exports = function (config) {
         terser = require('gulp-terser'),
         webpack = require('webpack-stream');
 
-    const task = function () {
+    const js = function () {
 
         let src;
         if (config.tasks.js.length) {
@@ -67,20 +67,20 @@ module.exports = function (config) {
             .pipe(browserSync.stream());
     };
 
-    const watcher = gulp.series(
+    const watch_js = gulp.series(
         function setWatchTrue(done) {
             global.watch = true;
             done();
         },
-        task
+        js
         // watching is done by WebPack when global.watch is true
         // function watchJs() {
         //     return gulp.watch(config.srcPath + config.assetsDir + 'js/*.js', gulp.parallel('js'));
         // }
     );
 
-    return {
-        task: task,
-        watch: watcher
-    };
+    return [
+        js,
+        watch_js
+    ];
 };

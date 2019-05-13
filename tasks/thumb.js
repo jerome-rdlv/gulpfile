@@ -136,7 +136,7 @@ module.exports = function (config) {
     const thumbsScssTemplate = config.srcPath + config.assetsDire + 'thumb.scss.mustache';
     let taskScss = false;
     if (fs.existsSync(thumbsScssTemplate)) {
-        taskScss = function () {
+        taskScss = function thumb_scss() {
             return gulp.src(config.srcPath + config.assetsDir + '/img/*')
                 .pipe(generateThumbScss({
                     sizes: thumbSizes,
@@ -147,7 +147,7 @@ module.exports = function (config) {
         };
     }
 
-    let taskCore = function () {
+    let thumb = function thumb() {
         return gulp.src(config.srcPath + '/img/*')
             .pipe(generateThumb({
                 sizes: thumbSizes
@@ -157,12 +157,17 @@ module.exports = function (config) {
             .pipe(gulp.dest(config.distPath + '/img/thumb')).pipe(touch());
     };
 
-    const task = taskScss ? gulp.series(taskScss, taskCore) : taskCore;
+    thumb = taskScss ? gulp.series(taskScss, thumb) : thumb;
 
-    const watcher = function () {
+    const watch_thumb = function () {
         return gulp.watch([
             config.srcPath + config.assetsDir + 'img/*',
             thumbsScssTemplate
-        ], taskCore);
+        ], thumb);
     };
+
+    return [
+        thumb,
+        watch_thumb
+    ];
 };
