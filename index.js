@@ -119,16 +119,10 @@ module.exports = function (override) {
             }
         }
     }
-    
+
     return Object.keys(tasks).sort().reduce(function (accumulator, key) {
         accumulator[key] = tasks[key];
         return accumulator;
     }, {});
-
-    //
-    // gulp.task('default', gulp.parallel(tasks));
-    // gulp.task('watch', gulp.series(
-    //     'default',
-    //     gulp.parallel(watchers)
-    // ));
+   
 };

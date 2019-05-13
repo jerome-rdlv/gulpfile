@@ -14,6 +14,8 @@ module.exports = function (config) {
         gulp = require('gulp'),
         path = require('path'),
         svgmin = require('gulp-svgmin'),
+        svgToScss = require('../lib/svg-to-scss'),
+        svgToSymbol = require('../lib/svg-to-symbol'),
         touch = require('../lib/touch');
 
 
@@ -57,6 +59,8 @@ module.exports = function (config) {
         return {plugins: plugins};
     }
 
+    
+    
     const svg = function () {
         return gulp.src(config.srcPath + config.assetsDir + 'svg/*.svg', {base: config.srcPath})
             .pipe(cacheBustSvgRefs())
