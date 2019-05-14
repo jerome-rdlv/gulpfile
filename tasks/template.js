@@ -148,6 +148,7 @@ module.exports = function (config) {
                     $script
                         .text(fs.readFileSync(filepath, 'utf8'))
                         .removeAttr('type')
+                        .removeAttr('data-inline')
                         .removeAttr('src');
                 } else {
                     console.warn(`file ${filepath} does not exist for inlining in ${file.basename}.`);
@@ -335,7 +336,6 @@ module.exports = function (config) {
     const watch_template = function () {
 
         let src = getSrc();
-        console.log(getWatchIgnored());
 
         src.push(
             config.distPath + '**/*',
