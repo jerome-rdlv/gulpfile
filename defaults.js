@@ -7,6 +7,8 @@ module.exports = {
     cacheBust: 'path',
     tasks: {
         browsersync: true,
+        // exclude from cleaning
+        cleanex: [],
         // static assets to copy
         copy: [
             'font/*.{woff,woff2}',
@@ -22,7 +24,7 @@ module.exports = {
             ]
         },
         svg: true,
-        symlink: false, // symlink
+        symlink: [], // symlink
         template: [], // templates
         thumb: false // thumbnail file
     }
