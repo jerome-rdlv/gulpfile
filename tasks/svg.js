@@ -95,19 +95,12 @@ module.exports = function (config) {
     };
 
     const watch_svg = function () {
-        return gulp.parallel(
-            // prepare svg and output to img dir
-            gulp.watch([
-                config.varPath + 'svg/*.svg',
-                config.srcPath + config.assetsDir + 'svg/*.svg',
-                config.srcPath + config.assetsDir + 'img/*'
-            ], svg),
-            // create symbols and update scss lib
-            gulp.watch([
-                config.varPath + config.assetsDir + 'svg/*.svg',
-                config.srcPath + 'svg.scss.mustache'
-            ], gulp.parallel(svg_scss, svg_symbol))
-        );
+        // prepare svg, create symbols and update scss lib
+        return gulp.watch([
+            config.srcPath + 'svg.scss.mustache',
+            config.srcPath + config.assetsDir + 'svg/*.svg',
+            config.srcPath + config.assetsDir + 'img/*',
+        ], gulp.parallel(svg, svg_scss, svg_symbol));
     };
 
     return [
@@ -116,5 +109,4 @@ module.exports = function (config) {
         svg_scss,
         svg_symbol
     ];
-}
-;
+};
