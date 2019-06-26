@@ -25,6 +25,16 @@ module.exports = function (config) {
             .digest('hex')
             .substr(0, 4);
 
+        /*
+        This configuration can be overriden in svg files
+        with following script:
+        
+            <script type="application/json" id="svgo-options">
+                [
+                    { "removeHiddenElems": false }
+                ]
+            </script>
+         */
         const plugins = [
             {removeDoctype: true},
             {removeComments: true},
