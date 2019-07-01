@@ -1,0 +1,69 @@
+$icons: ({{#items}}
+    '{{{filename}}}': (
+        filename: '{{{filename}}}',
+        url: '{{{dataurl}}}',
+        width: {{{width}}}px,
+        height: {{{height}}}px,
+        variables: {{{variables}}}
+    ),
+{{/items}});
+
+@function str-replace($string, $search, $replace: '') {
+    $index: str-index($string, $search);
+    @if $index {
+        @return str-slice($string, 1, $index - 1) + $replace + str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
+    }
+    @return $string;
+}
+
+@function _get-icon-url($name, $args) {
+    @if map-has-key($icons, $name) {
+        $args: keywords($args);
+        $icon: map-get($icons, $name);
+        $url: map-get($icon, 'url');
+        $variables: map-get($icon, 'variables');
+        @each $key, $value in $variables {
+            @if map-has-key($args, $key) {
+                $value: map-get($args, $key);
+            }
+            $value: str-replace(quote($value), '#', '%23');
+            $url: str-replace($url, '{' + $key + '}', $value);
+        }
+        @return $url;
+    } @else {
+        @return null;
+    }
+}
+
+@function get-icon-url($name, $args...) {
+    @return _get-icon-url($name, $args);
+}
+
+@mixin icon($name, $args...) {
+    $url: _get-icon-url($name, $args);
+    @if $url != null {
+        background-image: url($url);
+    } @else {
+        @warn 'Icon '+ $name +' can not be found.';
+    }
+}
+@mixin icon-img($name, $args...) {
+    @include icon($name, $args);
+}
+
+@mixin icon-dims($name) {
+    @if map-has-key($icons, $name) {
+        width: map-get(map-get($icons, $name), 'width');
+        height: map-get(map-get($icons, $name), 'height');
+    } @else {
+        @warn 'Icon '+ $name +' can not be found.';
+    }
+}
+@mixin icon-wd($name) {
+    @if map-has-key($icons, $name) {
+        @include icon($name);
+        @include icon-dims($name);
+    } @else {
+        @warn 'Icon '+ $name +' can not be found.';
+    }
+}

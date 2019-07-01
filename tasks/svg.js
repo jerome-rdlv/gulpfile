@@ -11,6 +11,7 @@ module.exports = function (config) {
         cleanSvg = require('../lib/clean-svg'),
         clearSvgParams = require('../lib/clear-svg-params'),
         crypto = require('crypto'),
+        fs = require('fs'),
         gulp = require('gulp'),
         path = require('path'),
         rename = require('gulp-rename'),
@@ -82,9 +83,16 @@ module.exports = function (config) {
 
     // svg availability in SCSS
     const svg_scss = function () {
+        
+        // look for template
+        let tpl = config.srcPath + 'svg.scss.mustache';
+        if (!fs.existsSync(tpl)) {
+            tpl = __dirname + '/../svg.scss.mustache';
+        }
+        
         return gulp.src(config.varPath + config.assetsDir + 'svg/*.svg')
             .pipe(svgToScss({
-                template: config.srcPath + 'svg.scss.mustache',
+                template: tpl,
                 output: '_icon-svg.scss'
             }))
             .pipe(gulp.dest(config.varPath)).pipe(touch())
