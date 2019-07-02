@@ -67,17 +67,10 @@ module.exports = function (config) {
             .pipe(browserSync.stream());
     };
 
-    const watch_js = gulp.series(
-        function setWatchTrue(done) {
-            global.watch = true;
-            done();
-        },
-        js
-        // watching is done by WebPack when global.watch is true
-        // function watchJs() {
-        //     return gulp.watch(config.srcPath + config.assetsDir + 'js/*.js', gulp.parallel('js'));
-        // }
-    );
+    const watch_js = function () {
+        global.watch = true;
+        return js();
+    };
 
     return [
         js,
