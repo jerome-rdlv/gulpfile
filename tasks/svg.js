@@ -83,20 +83,19 @@ module.exports = function (config) {
 
     // svg availability in SCSS
     const svg_scss = function () {
-        
+
         // look for template
         let tpl = config.srcPath + 'svg.scss.mustache';
         if (!fs.existsSync(tpl)) {
             tpl = __dirname + '/../svg.scss.mustache';
         }
-        
+
         return gulp.src(config.varPath + config.assetsDir + 'svg/*.svg')
             .pipe(svgToScss({
                 template: tpl,
                 output: '_icon-svg.scss'
             }))
-            .pipe(gulp.dest(config.varPath)).pipe(touch())
-            ;
+            .pipe(gulp.dest(config.varPath)).pipe(touch());
     };
 
     // svg availability for inclusion as inline symbol in html
@@ -114,11 +113,20 @@ module.exports = function (config) {
 
     const watch_svg = function () {
         // prepare svg, create symbols and update scss lib
-        return gulp.watch([
-            config.srcPath + 'svg.scss.mustache',
-            config.srcPath + config.assetsDir + 'svg/*.svg',
-            config.srcPath + config.assetsDir + 'img/*',
-        ], gulp.parallel(svg, svg_scss, svg_symbol));
+        return gulp.watch(
+            [
+                config.srcPath + 'svg.scss.mustache',
+                config.srcPath + config.assetsDir + 'svg/*.svg',
+                config.srcPath + config.assetsDir + 'img/*',
+            ],
+            gulp.series(
+                svg,
+                gulp.parallel(
+                    svg_scss,
+                    svg_symbol
+                )
+            )
+        );
     };
 
     return [
