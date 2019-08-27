@@ -1,3 +1,9 @@
+/**
+ * @see node_modules/gulpfile/defaults.js for possible options
+ * Some options can be overriden by CLI arguments:
+ *  - --url=http://example.org
+ *  - --production or --prod
+ */
 module.exports = {
     url: null,
     srcDir: 'src',
@@ -5,6 +11,7 @@ module.exports = {
     distDir: 'assets',
     assetsDir: '',
     cacheBust: 'path',
+    production: false,
     tasks: {
         browsersync: true,
         // exclude from cleaning

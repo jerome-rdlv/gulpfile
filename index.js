@@ -4,7 +4,9 @@ module.exports = function (override) {
         gulp = require('gulp'),
         merge = require('./lib/merge'),
         path = require('path'),
-        requireDir = require('require-dir');
+        requireDir = require('require-dir'),
+        argv = require('yargs').argv
+    ;
 
     // globals
     watch = false;
@@ -12,6 +14,10 @@ module.exports = function (override) {
 
     // merge configuration
     merge(config, override);
+
+    // override with possible CLI arguments
+    config.url = argv.url || config.url;
+    config.production = argv.production || argv.prod || config.production;
 
     // paths
     if (!config.basePath && (!config.srcPath || !config.varPath || !config.distPath)) {
@@ -33,17 +39,6 @@ module.exports = function (override) {
         decodeEntities: false,
         xmlMode: true
     };
-
-    // environment
-    config.production = false;
-    for (let i in process.argv) {
-        if (process.argv.hasOwnProperty(i)) {
-            if (process.argv[i] === '--production' || process.argv[i] === '--prod') {
-                config.production = true;
-                break;
-            }
-        }
-    }
 
     // let tasks = {};
     let watchers = {};
@@ -124,5 +119,5 @@ module.exports = function (override) {
         accumulator[key] = tasks[key];
         return accumulator;
     }, {});
-   
+
 };
