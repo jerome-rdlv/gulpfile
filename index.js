@@ -2,6 +2,7 @@ module.exports = function (override) {
     const
         glob = require('glob'),
         gulp = require('gulp'),
+        imagemin = require('gulp-imagemin'),
         merge = require('./lib/merge'),
         path = require('path'),
         requireDir = require('require-dir'),
@@ -39,6 +40,13 @@ module.exports = function (override) {
         decodeEntities: false,
         xmlMode: true
     };
+    
+    config.imageminOptions = [
+        imagemin.gifsicle({interlaced: true}),
+        imagemin.jpegtran({progressive: true}),
+        // levels greater than 0 causes some black PNGs on Safari
+        imagemin.optipng({optimizationLevel: 0})
+    ];
 
     // let tasks = {};
     let watchers = {};
