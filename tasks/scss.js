@@ -18,7 +18,10 @@ module.exports = function (config) {
 
 
     const scss = function () {
-        return gulp.src(config.srcPath + config.assetsDir + 'scss/*.scss', {base: config.srcPath})
+        return gulp.src([
+            config.srcPath + config.assetsDir + 'scss/*.scss',
+            config.srcPath + config.assetsDir + 'scss/**/*.scss',
+        ], {base: config.srcPath})
         // .pipe(changed(config.varPath))
             .pipe(sass({
                 outputStyle: 'expanded',
