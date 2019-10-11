@@ -5,6 +5,7 @@ module.exports = function (config) {
     }
 
     const
+        browserSync = require('../lib/browsersync'),
         changed = require('gulp-changed'),
         gulp = require('gulp'),
         touch = require('../lib/touch');
@@ -20,7 +21,8 @@ module.exports = function (config) {
         })
             .pipe(changed(config.distPath))
             .pipe(gulp.dest(config.distPath))
-            .pipe(touch());
+            .pipe(touch())
+            .pipe(browserSync.stream());
     };
 
     return [
