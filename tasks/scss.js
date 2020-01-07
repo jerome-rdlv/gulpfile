@@ -8,7 +8,7 @@ module.exports = function (config) {
         autoprefixer = require('gulp-autoprefixer'),
         changed = require('gulp-changed'),
         browserSync = require('../lib/browsersync'),
-        cacheBustCssRefs = require('../lib/cachebust-css-refs'),
+        cacheBustCssRefs = require('../lib/cachebust-css-refs')(config),
         cssnano = require('../lib/cssnano-stream'),
         gulp = require('gulp'),
         gulpif = require('gulp-if'),
@@ -22,7 +22,7 @@ module.exports = function (config) {
             config.srcPath + config.assetsDir + 'scss/*.scss',
             config.srcPath + config.assetsDir + 'scss/**/*.scss',
         ], {base: config.srcPath})
-        // .pipe(changed(config.varPath))
+            // .pipe(changed(config.varPath))
             .pipe(sass({
                 outputStyle: 'expanded',
                 precision: 8

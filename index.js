@@ -5,13 +5,12 @@ module.exports = function (override) {
         imagemin = require('gulp-imagemin'),
         merge = require('./lib/merge'),
         path = require('path'),
-        requireDir = require('require-dir'),
+        // requireDir = require('require-dir'),
         argv = require('yargs').argv
     ;
 
     // globals
-    watch = false;
-    config = require('./defaults');
+    const config = require('./defaults');
 
     // merge configuration
     merge(config, override);
@@ -19,6 +18,7 @@ module.exports = function (override) {
     // override with possible CLI arguments
     config.url = argv.url || config.url;
     config.production = argv.production || argv.prod || config.production;
+    config.debug = argv.debug || config.debug;
 
     // paths
     if (!config.basePath && (!config.srcPath || !config.varPath || !config.distPath)) {
@@ -40,7 +40,7 @@ module.exports = function (override) {
         decodeEntities: false,
         xmlMode: true
     };
-    
+
     config.imageminOptions = [
         imagemin.gifsicle({interlaced: true}),
         imagemin.jpegtran({progressive: true}),
@@ -49,9 +49,9 @@ module.exports = function (override) {
     ];
 
     // let tasks = {};
-    let watchers = {};
-    let defaultTask = [];
-    let defaultWatcher = [];
+    // let watchers = {};
+    // let defaultTask = [];
+    // let defaultWatcher = [];
 
     const tasks = glob.sync(__dirname + '/tasks/*.js').reduce(function (loaded, file) {
         const module = require(file)(config);
@@ -123,6 +123,7 @@ module.exports = function (override) {
         }
     }
 
+    // return sorted tasks
     return Object.keys(tasks).sort().reduce(function (accumulator, key) {
         accumulator[key] = tasks[key];
         return accumulator;

@@ -10,23 +10,26 @@ module.exports = function (config) {
 
     const
         browserSync = require('../lib/browsersync'),
+        eslint = require('gulp-eslint'),
         gulp = require('gulp'),
         gulpif = require('gulp-if'),
         touch = require('../lib/touch'),
-        uglify = require('gulp-uglify');
+        terser = require('gulp-terser');
 
     const src = config.tasks.jsil.map(function (entry) {
         return config.srcPath + config.assetsDir + entry;
     });
 
-    const jsil = function (cb) {
+    const jsil = function () {
         return gulp.src(src, {base: config.srcPath})
-            .pipe(gulpif(config.production, uglify()))
+            // .pipe(gulpif(config.production, uglify()))
+            .pipe(eslint())
+            .pipe(gulpif(config.production, terser()))
             .pipe(gulp.dest(config.distPath)).pipe(touch())
             .pipe(browserSync.stream());
     };
 
-    const watch_jsil = function (cb) {
+    const watch_jsil = function () {
         return gulp.watch(src, {base: config.srcPath}, jsil);
     };
 

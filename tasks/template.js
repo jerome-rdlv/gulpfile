@@ -7,7 +7,7 @@ module.exports = function (config) {
     const
         addUrlParams = require('../lib/add-url-params'),
         browserSync = require('../lib/browsersync'),
-        cacheBustHtmlRefs = require('../lib/cachebust-html-refs'),
+        cacheBustHtmlRefs = require('../lib/cachebust-html-refs')(config),
         cheerio = require('cheerio'),
         concat = require('gulp-concat'),
         crypto = require('crypto'),

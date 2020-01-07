@@ -5,7 +5,7 @@ module.exports = function (config) {
     }
 
     const
-        cacheBustSvgRefs = require('../lib/cachebust-svg-refs'),
+        cacheBustSvgRefs = require('../lib/cachebust-svg-refs')(config),
         changed = require('gulp-changed'),
         cheerio = require('cheerio'),
         cleanSvg = require('../lib/clean-svg'),
@@ -83,13 +83,13 @@ module.exports = function (config) {
 
     // svg availability in SCSS
     const svg_scss = function () {
-        
+
         // look for template
         let tpl = config.srcPath + 'svg.scss.mustache';
         if (!fs.existsSync(tpl)) {
             tpl = __dirname + '/../svg.scss.mustache';
         }
-        
+
         return gulp.src(config.varPath + config.assetsDir + 'svg/*.svg')
             .pipe(svgToScss({
                 template: tpl,

@@ -10,23 +10,23 @@
     "license": "MIT",
     "private": true,
     "dependencies": {
-        "babel-core": ">=6.26",
+        "@babel/core": "^7.7.7",
+        "@babel/preset-env": "^7.7.7",
         "babel-loader": ">=7.1.4",
-        "babel-preset-env": ">=1.6",
-        "babel-preset-react": ">=6.24.1",
-        "babelify": "^10.0.0",
         "browser-sync": ">=2.23",
         "browserify": ">=16.1",
         "cheerio": ">=1.0.0-rc.2",
+        "core-js": "^3.6.0",
         "cssnano": ">=4.0",
         "eslint-loader": ">=2.0.0",
         "eslint-plugin-react": ">=7.9.1",
         "fs": ">=0.0.1-security",
         "gulp": ">=4.0",
         "gulp-autoprefixer": ">=4.1",
-        "gulp-babel": ">=7.0.1",
+        "gulp-babel": "^8.0.0",
         "gulp-changed": ">=3.2",
         "gulp-clean": ">=0.4",
+        "gulp-clone": "^2.0.1",
         "gulp-concat": ">=2.6.1",
         "gulp-cssnano": ">=2.1",
         "gulp-eslint": ">=4.0.2",
@@ -38,7 +38,7 @@
         "gulp-postcss": ">=7.0",
         "gulp-rename": ">=1.2",
         "gulp-sass": ">=3.1",
-        "gulp-sourcemaps": ">=2.6",
+        "gulp-sourcemaps": "^2.6.5",
         "gulp-svgmin": ">=1.2",
         "gulp-tap": ">=1.0",
         "gulp-terser": ">=0.1",
@@ -52,10 +52,16 @@
         "through": ">=2.3",
         "url": ">=0.11",
         "vinyl": ">=2.1",
-        "vinyl-buffer": ">=1.0",
+        "vinyl-buffer": "^1.0.1",
         "vinyl-named": ">=1.1",
         "vinyl-source-stream": "^2.0.0",
         "vinyl-transform": "^1.0.0",
         "webpack-stream": ">=4.0.3"
+    },
+    "eslintConfig": {
+        "env": {
+            "es6": true,
+            "node": true
+        }
     }
 }

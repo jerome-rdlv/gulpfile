@@ -4,9 +4,73 @@ module.exports = function (config) {
         return false;
     }
 
+    function getBabelConfig(legacy, modules) {
+        const envOptions = {
+            corejs: "3",
+            useBuiltIns: "usage",
+            modules: modules,
+            debug: config.debug
+        };
+
+        if (!legacy) {
+            envOptions.targets = {
+                esmodules: true
+            };
+        } else {
+            envOptions.targets = '> 0.25% in FR, not dead';
+        }
+
+        return {
+            exclude: 'node_modules/**',
+            presets: [
+                [
+                    "@babel/preset-env",
+                    envOptions
+                ]
+            ]
+        };
+    }
+
+    function getWPConfig(legacy, watch) {
+
+        const babelConfig = getBabelConfig(legacy, true);
+        babelConfig.cacheDirectory = true;
+
+        return {
+            target: 'web',
+            module: {
+                rules: [
+                    {
+                        enforce: 'pre',
+                        test: /\.m?jsx?$/,
+                        exclude: /node_modules/,
+                        loader: 'eslint-loader',
+                        options: {
+                            failOnError: false,
+                            failOnWarning: false,
+                        }
+                    },
+                    {
+                        test: /\.m?jsx?$/,
+                        exclude: /node_modules/,
+                        use: {
+                            loader: 'babel-loader',
+                            options: getBabelConfig(legacy)
+                        },
+                    },
+                ],
+            },
+            watch: !!watch,
+            devtool: config.production ? false : 'eval',
+            mode: config.production ? 'production' : 'development',
+            output: {
+                filename: legacy ? 'js/[name].legacy.js' : 'js/[name].js'
+            }
+        };
+    }
+
     const
         browserSync = require('../lib/browsersync'),
-        // eslint = require('gulp-eslint'),
         gulp = require('gulp'),
         gulpif = require('gulp-if'),
         named = require('vinyl-named'),
@@ -14,51 +78,25 @@ module.exports = function (config) {
         terser = require('gulp-terser'),
         webpack = require('webpack-stream');
 
-    const js = function () {
+    let src;
+    if (config.tasks.js.length) {
+        src = config.tasks.js.map(function (entry) {
+            return config.srcPath + config.assetsDir + entry;
+        });
+    } else {
+        src = [config.srcPath + config.assetsDir + 'js/*.js'];
+    }
 
-        let src;
-        if (config.tasks.js.length) {
-            src = config.tasks.js.map(function (entry) {
-                return config.srcPath + config.assetsDir + entry;
-            });
-        } else {
-            src = [config.srcPath + config.assetsDir + 'js/*.js'];
-        }
+    const js = function (cb, watch) {
 
         return gulp.src(src, {
             base: config.srcPath,
             sourcemaps: true,
         })
-        // .pipe(eslint())
-        // .pipe(eslint.format())
             .pipe(named())
             .pipe(webpack({
-                target: 'web',
-                module: {
-                    rules: [
-                        {
-                            enforce: 'pre',
-                            test: /.jsx?$/,
-                            exclude: /node_modules/,
-                            loader: 'eslint-loader',
-                            options: {
-                                failOnError: false,
-                                failOnWarning: false,
-                            }
-                        },
-                        // {
-                        //     test: /.jsx?$/,
-                        //     exclude: /node_modules/,
-                        //     loader: 'babel-loader',
-                        // },
-                    ],
-                },
-                watch: global.watch,
-                devtool: 'inline-source-map',
-                mode: config.production ? 'production' : 'development',
-                output: {
-                    filename: 'js/[name].js',
-                }
+                watch: !!watch,
+                config: [getWPConfig(true, watch), getWPConfig(false, watch)]
             }))
             .pipe(gulpif(config.production, terser()))
             .pipe(gulp.dest(config.distPath, {
@@ -67,9 +105,12 @@ module.exports = function (config) {
             .pipe(browserSync.stream());
     };
 
-    const watch_js = function () {
-        global.watch = true;
-        return js();
+    const watch_js = function (cb) {
+        // if (config.production) {
+        //     return gulp.watch(src, js);
+        // } else {
+        return js(cb, true);
+        // }
     };
 
     return [
