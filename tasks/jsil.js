@@ -13,6 +13,7 @@ module.exports = function (config) {
         eslint = require('gulp-eslint'),
         gulp = require('gulp'),
         gulpif = require('gulp-if'),
+        rollup = require('gulp-rollup'),
         touch = require('../lib/touch'),
         terser = require('gulp-terser');
 
@@ -21,9 +22,14 @@ module.exports = function (config) {
     });
 
     const jsil = function () {
-        return gulp.src(src, {base: config.srcPath})
-            // .pipe(gulpif(config.production, uglify()))
+        return gulp.src(config.srcPath + config.assetsDir + 'js/*.js', {base: config.srcPath})
             .pipe(eslint())
+            .pipe(rollup({
+                input: src,
+                output: {
+                    format: 'iife',
+                }
+            }))
             .pipe(gulpif(config.production, terser()))
             .pipe(gulp.dest(config.distPath)).pipe(touch())
             .pipe(browserSync.stream());
