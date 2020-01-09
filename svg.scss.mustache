@@ -39,16 +39,13 @@ $svgs: ({{#items}}
     @return _get-svg-url($name, $args);
 }
 
-@mixin svg($name, $args...) {
+@mixin svg-background($name, $args...) {
     $url: _get-svg-url($name, $args);
     @if $url != null {
         background-image: url($url);
     } @else {
         @warn 'Svg '+ $name +' can not be found.';
     }
-}
-@mixin svg-img($name, $args...) {
-    @include svg($name, $args);
 }
 
 @mixin svg-dims($name) {
