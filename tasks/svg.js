@@ -8,7 +8,7 @@ module.exports = function (config) {
         cacheBustSvgRefs = require('../lib/cachebust-svg-refs')(config),
         changed = require('gulp-changed'),
         cheerio = require('cheerio'),
-        cleanSvg = require('../lib/clean-svg'),
+        cleanSvg = require('../lib/clean-svg')(config),
         clearSvgParams = require('../lib/clear-svg-params'),
         crypto = require('crypto'),
         fs = require('fs'),
@@ -16,8 +16,8 @@ module.exports = function (config) {
         path = require('path'),
         rename = require('gulp-rename'),
         svgmin = require('gulp-svgmin'),
-        svgToScss = require('../lib/svg-to-scss'),
-        svgToSymbol = require('../lib/svg-to-symbol'),
+        svgToScss = require('../lib/svg-to-scss')(config),
+        svgToSymbol = require('../lib/svg-to-symbol')(config),
         touch = require('../lib/touch');
 
     function svgminCallback(file) {
@@ -93,7 +93,7 @@ module.exports = function (config) {
         return gulp.src(config.varPath + config.assetsDir + 'svg/*.svg')
             .pipe(svgToScss({
                 template: tpl,
-                output: '_icon-svg.scss'
+                output: '_svg.scss'
             }))
             .pipe(gulp.dest(config.varPath)).pipe(touch())
             ;
