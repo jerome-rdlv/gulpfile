@@ -16,7 +16,7 @@ module.exports = function (config) {
         path = require('path'),
         rename = require('gulp-rename'),
         svgmin = require('gulp-svgmin'),
-        svgToScss = require('../lib/svg-to-scss')(config),
+        svgToScss = require('../lib/svg-to-scss'),
         svgToSymbol = require('../lib/svg-to-symbol')(config),
         touch = require('../lib/touch');
 

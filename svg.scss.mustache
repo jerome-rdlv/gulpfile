@@ -1,4 +1,4 @@
-$svgs: ({{#items}}
+$icons: ({{#items}}
     '{{{filename}}}': (
         filename: '{{{filename}}}',
         url: '{{{dataurl}}}',
@@ -16,12 +16,12 @@ $svgs: ({{#items}}
     @return $string;
 }
 
-@function _get-svg-url($name, $args) {
-    @if map-has-key($svgs, $name) {
+@function _get-icon-url($name, $args) {
+    @if map-has-key($icons, $name) {
         $args: keywords($args);
-        $svg: map-get($svgs, $name);
-        $url: map-get($svg, 'url');
-        $variables: map-get($svg, 'variables');
+        $icon: map-get($icons, $name);
+        $url: map-get($icon, 'url');
+        $variables: map-get($icon, 'variables');
         @each $key, $value in $variables {
             @if map-has-key($args, $key) {
                 $value: map-get($args, $key);
@@ -35,32 +35,35 @@ $svgs: ({{#items}}
     }
 }
 
-@function get-svg-url($name, $args...) {
-    @return _get-svg-url($name, $args);
+@function get-icon-url($name, $args...) {
+    @return _get-icon-url($name, $args);
 }
 
-@mixin svg-background($name, $args...) {
-    $url: _get-svg-url($name, $args);
+@mixin icon($name, $args...) {
+    $url: _get-icon-url($name, $args);
     @if $url != null {
         background-image: url($url);
     } @else {
-        @warn 'Svg '+ $name +' can not be found.';
+        @warn 'Icon '+ $name +' can not be found.';
     }
+}
+@mixin icon-img($name, $args...) {
+    @include icon($name, $args);
 }
 
-@mixin svg-dims($name) {
-    @if map-has-key($svgs, $name) {
-        width: map-get(map-get($svgs, $name), 'width');
-        height: map-get(map-get($svgs, $name), 'height');
+@mixin icon-dims($name) {
+    @if map-has-key($icons, $name) {
+        width: map-get(map-get($icons, $name), 'width');
+        height: map-get(map-get($icons, $name), 'height');
     } @else {
-        @warn 'Svg '+ $name +' can not be found.';
+        @warn 'Icon '+ $name +' can not be found.';
     }
 }
-@mixin svg-wd($name) {
-    @if map-has-key($svgs, $name) {
-        @include svg($name);
-        @include svg-dims($name);
+@mixin icon-wd($name) {
+    @if map-has-key($icons, $name) {
+        @include icon($name);
+        @include icon-dims($name);
     } @else {
-        @warn 'Svg '+ $name +' can not be found.';
+        @warn 'Icon '+ $name +' can not be found.';
     }
 }
