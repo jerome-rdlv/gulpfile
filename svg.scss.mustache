@@ -58,8 +58,8 @@ $svgs: ({{#items}}
 }
 @mixin svg-background-wd($name) {
     @if map-has-key($svgs, $name) {
-        @include icon($name);
-        @include icon-dims($name);
+        @include svg-background($name);
+        @include svg-dims($name);
     } @else {
         @warn 'SVG '+ $name +' can not be found.';
     }
