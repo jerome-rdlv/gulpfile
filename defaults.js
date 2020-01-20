@@ -28,7 +28,8 @@ module.exports = {
                 'last 5 version',
                 'ie 8',
                 'ie 9'
-            ]
+            ],
+            nonano: [],
         },
         svg: true,
         symlink: [], // symlink

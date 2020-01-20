@@ -32,10 +32,16 @@ module.exports = function (config) {
             }))
             .pipe(autoprefixer(...config.tasks.scss.autoprefixer))
             .pipe(cacheBustCssRefs(config.distPath + config.assetsDir + 'css/'))
-            .pipe(gulpif(config.production, cssnano({
-                autoprefixer: false,
-                zindex: false
-            })))
+            .pipe(gulpif(
+                function (file) {
+                    // disable cssnano for some files
+                    return config.production && config.tasks.scss.nonano.indexOf(file.basename) === -1;
+                },
+                cssnano({
+                    autoprefixer: false,
+                    zindex: false
+                })
+            ))
             .pipe(gulp.dest(config.distPath)).pipe(touch())
             .pipe(browserSync.stream());
     };
