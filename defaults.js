@@ -3,6 +3,8 @@
  * Some options can be overriden by CLI arguments:
  *  - --url=http://example.org
  *  - --production or --prod
+ *
+ *  url option accepts an array
  */
 module.exports = {
     url: null,

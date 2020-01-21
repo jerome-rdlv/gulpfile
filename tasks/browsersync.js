@@ -5,7 +5,6 @@ module.exports = function (config) {
     }
 
     if (!config.url.length) {
-        // eslint-disable-next-line no-console
         throw 'You must configure project URL for browserSync to work';
     }
 
@@ -16,10 +15,7 @@ module.exports = function (config) {
 
     // return the task
     return function watch_browsersync() {
-        return browserSync.init({
-            proxy: config.url,
-            open: false,
-        });
+        return browserSync.init(config.url);
     };
 };
 

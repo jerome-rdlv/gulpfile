@@ -14,7 +14,7 @@ module.exports = function (override) {
 
     // merge configuration
     merge(config, override);
-    
+
     // override with possible CLI arguments
     config.url = argv.url || config.url;
     config.production = argv.production || argv.prod || config.production;
@@ -48,11 +48,6 @@ module.exports = function (override) {
         imagemin.optipng({optimizationLevel: 0})
     ];
 
-    // let tasks = {};
-    // let watchers = {};
-    // let defaultTask = [];
-    // let defaultWatcher = [];
-
     const tasks = glob.sync(__dirname + '/tasks/*.js').reduce(function (loaded, file) {
         const module = require(file)(config);
         const name = path.basename(file).replace(/\.[^.]+/, '');
@@ -69,7 +64,7 @@ module.exports = function (override) {
 
         return loaded;
     }, {});
-
+    
     if (Object.keys(tasks).length) {
 
         let levels = [
