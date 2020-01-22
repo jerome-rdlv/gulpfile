@@ -43,7 +43,7 @@ module.exports = function (override) {
 
     config.imageminOptions = [
         imagemin.gifsicle({interlaced: true}),
-        imagemin.jpegtran({progressive: true}),
+        imagemin.mozjpeg({progressive: true}),
         // levels greater than 0 causes some black PNGs on Safari
         imagemin.optipng({optimizationLevel: 0})
     ];
