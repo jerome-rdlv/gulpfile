@@ -15,8 +15,6 @@ module.exports = function (config) {
 
     // return the task
     return function watch_browsersync() {
-        browserSync.init(config.url);
-        // gulp.watch(config.distPath +'**/*').on('change', browserSync.reload);
+        return browserSync.init(config);
     };
 };
-

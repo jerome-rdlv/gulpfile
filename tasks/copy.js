@@ -22,7 +22,7 @@ module.exports = function (config) {
             .pipe(changed(config.distPath))
             .pipe(gulp.dest(config.distPath))
             .pipe(touch())
-            .pipe(browserSync.stream());
+            ;
     };
 
     return [

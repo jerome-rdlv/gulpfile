@@ -43,7 +43,6 @@ module.exports = function (config) {
                 })
             ))
             .pipe(gulp.dest(config.distPath))
-            .pipe(browserSync.stream())
             .pipe(touch())
             ;
     };

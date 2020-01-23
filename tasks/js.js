@@ -101,8 +101,9 @@ module.exports = function (config) {
             .pipe(gulpif(config.production, terser()))
             .pipe(gulp.dest(config.distPath, {
                 sourcemaps: true
-            })).pipe(touch())
-            .pipe(browserSync.stream());
+            }))
+            .pipe(touch())
+            ;
     };
 
     const watch_js = function (cb) {

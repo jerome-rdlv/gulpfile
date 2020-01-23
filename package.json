@@ -45,7 +45,6 @@
         "gulp-touch-cmd": ">=0.0",
         "gulp-uglify": "^3.0.1",
         "jest": ">=23.1",
-        "lazypipe": "^1.0.2",
         "mustache": ">=2.3",
         "path": ">=0.12",
         "postcss-object-fit-images": ">=1.1",

@@ -25,8 +25,9 @@ module.exports = function (config) {
             // .pipe(gulpif(config.production, uglify()))
             .pipe(eslint())
             .pipe(gulpif(config.production, terser()))
-            .pipe(gulp.dest(config.distPath)).pipe(touch())
-            .pipe(browserSync.stream());
+            .pipe(gulp.dest(config.distPath))
+            .pipe(touch())
+            ;
     };
 
     const watch_jsil = function () {

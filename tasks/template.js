@@ -329,8 +329,9 @@ module.exports = function (config) {
                 html5: true
             }))
             .pipe(phpPop())
-            .pipe(gulp.dest(config.distPath)).pipe(touch())
-            .pipe(browserSync.stream());
+            .pipe(gulp.dest(config.distPath))
+            .pipe(touch())
+            ;
     };
 
     const watch_template = function () {
