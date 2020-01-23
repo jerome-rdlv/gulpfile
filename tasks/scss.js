@@ -42,8 +42,10 @@ module.exports = function (config) {
                     zindex: false
                 })
             ))
-            .pipe(gulp.dest(config.distPath)).pipe(touch())
-            .pipe(browserSync.stream());
+            .pipe(gulp.dest(config.distPath))
+            .pipe(browserSync.stream())
+            .pipe(touch())
+            ;
     };
 
     const watch_scss = function () {
