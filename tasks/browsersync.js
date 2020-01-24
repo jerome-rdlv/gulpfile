@@ -14,7 +14,7 @@ module.exports = function (config) {
     ;
 
     // return the task
-    return function watch_browsersync() {
+    return function browsersync() {
         return browserSync.init(config);
     };
 };
