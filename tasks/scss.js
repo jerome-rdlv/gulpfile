@@ -12,17 +12,24 @@ module.exports = function (config) {
         cssnano = require('../lib/cssnano-stream'),
         gulp = require('gulp'),
         gulpif = require('gulp-if'),
+        path = require('path'),
         rename = require('gulp-rename'),
+        run = require('../lib/run'),
         sass = require('gulp-sass'),
         touch = require('../lib/touch');
 
 
-    const scss = function () {
-        return gulp.src([
-            config.srcPath + config.assetsDir + 'scss/*.scss',
-            config.srcPath + config.assetsDir + 'scss/**/*.scss',
-        ], {base: config.srcPath})
-            // .pipe(changed(config.varPath))
+    const scss = function (src) {
+
+        if (!src || typeof src !== 'string' || /^_/.test(path.basename(src))) {
+            src = [
+                config.srcPath + config.assetsDir + 'scss/*.scss',
+                config.srcPath + config.assetsDir + 'scss/**/*.scss',
+            ];
+        }
+
+        return gulp.src(src, {base: config.srcPath})
+            .pipe(changed(config.distPath))
             .pipe(sass({
                 outputStyle: 'expanded',
                 precision: 8
@@ -52,7 +59,14 @@ module.exports = function (config) {
             config.srcPath + config.assetsDir + 'scss/*.scss',
             config.srcPath + config.assetsDir + 'scss/**/*.scss',
             config.varPath + '_icon-svg.scss'
-        ], scss);
+        ])
+            .on('change', function (path) {
+                return run(scss, path);
+            })
+            .on('add', function (path) {
+                return run(scss, path);
+            })
+            ;
     };
 
     return [

@@ -22,7 +22,6 @@ module.exports = function (config) {
 
     const jsil = function () {
         return gulp.src(src, {base: config.srcPath})
-            // .pipe(gulpif(config.production, uglify()))
             .pipe(eslint())
             .pipe(gulpif(config.production, terser()))
             .pipe(gulp.dest(config.distPath))

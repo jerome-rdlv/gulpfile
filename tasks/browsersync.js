@@ -1,6 +1,6 @@
 module.exports = function (config) {
 
-    if (config.production || !config.tasks.browsersync) {
+    if (/*config.production || */!config.tasks.browsersync) {
         return false;
     }
 
