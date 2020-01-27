@@ -6,18 +6,18 @@ module.exports = function (config) {
 
     function getBabelConfig(legacy, modules) {
         const envOptions = {
-            corejs: "3",
+            corejs: 3,
             useBuiltIns: "usage",
-            modules: modules,
-            debug: config.debug
+            shippedProposals: true,
+            modules: !!modules,
+            debug: !!config.debug
         };
 
         if (!legacy) {
+            envOptions.ignoreBrowserslistConfig = true;
             envOptions.targets = {
                 esmodules: true
             };
-        } else {
-            envOptions.targets = '> 0.25% in FR, not dead';
         }
 
         return {
