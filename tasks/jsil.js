@@ -4,10 +4,6 @@ is different from `js` because it does not bundle dependencies.
  */
 module.exports = function (config) {
 
-    if (!config.tasks.jsil || !config.tasks.jsil.length) {
-        return false;
-    }
-
     const
         browserSync = require('../lib/browsersync'),
         eslint = require('gulp-eslint'),
@@ -19,6 +15,8 @@ module.exports = function (config) {
     const src = config.tasks.jsil.map(function (entry) {
         return config.srcPath + config.assetsDir + entry;
     });
+    
+    src.push(config.srcPath + config.assetsDir +'js/inline-*.js');
 
     const jsil = function () {
         return gulp.src(src, {base: config.srcPath})
