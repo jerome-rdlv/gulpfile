@@ -10,7 +10,7 @@ module.exports = function (config) {
             useBuiltIns: "usage",
             shippedProposals: true,
             modules: !!modules,
-            debug: !!config.debug
+            debug: !!config.debug && legacy
         };
 
         if (!legacy) {
@@ -33,7 +33,7 @@ module.exports = function (config) {
 
     function getWPConfig(legacy, watch) {
 
-        const babelConfig = getBabelConfig(legacy, true);
+        const babelConfig = getBabelConfig(legacy, false);
         babelConfig.cacheDirectory = true;
 
         return {
@@ -55,7 +55,7 @@ module.exports = function (config) {
                         exclude: /node_modules/,
                         use: {
                             loader: 'babel-loader',
-                            options: getBabelConfig(legacy)
+                            options: babelConfig
                         },
                     },
                 ],
