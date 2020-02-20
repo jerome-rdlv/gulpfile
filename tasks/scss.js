@@ -6,10 +6,11 @@ module.exports = function (config) {
 
     const
         autoprefixer = require('gulp-autoprefixer'),
-        changed = require('gulp-changed'),
         browserSync = require('../lib/browsersync'),
         cacheBustCssRefs = require('../lib/cachebust-css-refs')(config),
+        changed = require('gulp-changed'),
         cssnano = require('../lib/cssnano-stream'),
+        mqsplit = require('../lib/css-mq-split')(config),
         gulp = require('gulp'),
         gulpif = require('gulp-if'),
         path = require('path'),
@@ -38,6 +39,7 @@ module.exports = function (config) {
                 path.dirname = path.dirname.replace('scss', 'css');
             }))
             .pipe(autoprefixer())
+            .pipe(mqsplit())
             .pipe(cacheBustCssRefs(config.distPath + config.assetsDir + 'css/'))
             .pipe(gulpif(
                 function (file) {

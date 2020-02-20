@@ -28,6 +28,11 @@ module.exports = {
         scss: {
             autoprefixer: [],
             nonano: [],
+            split: {
+                mobile: [0, 420 / 16],
+                tablet: [420 / 16, 1200 / 16],
+                desktop: [1200 / 16],
+            },
         },
         svg: true,
         symlink: [], // symlink
