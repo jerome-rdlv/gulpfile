@@ -47,6 +47,7 @@
         "jest": ">=23.1",
         "mustache": ">=2.3",
         "path": ">=0.12",
+        "postcss-remove-media-query-ranges": "^1.0.3",
         "postcss-object-fit-images": ">=1.1",
         "require-dir": ">=1.0",
         "through": ">=2.3",
