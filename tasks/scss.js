@@ -37,7 +37,7 @@ module.exports = function (config) {
             .pipe(rename(function (path) {
                 path.dirname = path.dirname.replace('scss', 'css');
             }))
-            .pipe(autoprefixer(...config.tasks.scss.autoprefixer))
+            .pipe(autoprefixer())
             .pipe(cacheBustCssRefs(config.distPath + config.assetsDir + 'css/'))
             .pipe(gulpif(
                 function (file) {

@@ -26,11 +26,7 @@ module.exports = {
         js: [], // script entrypoints
         jsil: [], // inline scripts
         scss: {
-            autoprefixer: [
-                'last 5 version',
-                'ie 8',
-                'ie 9'
-            ],
+            autoprefixer: [],
             nonano: [],
         },
         svg: true,
