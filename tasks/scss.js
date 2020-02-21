@@ -10,7 +10,7 @@ module.exports = function (config) {
         cacheBustCssRefs = require('../lib/cachebust-css-refs')(config),
         changed = require('gulp-changed'),
         cssnano = require('../lib/cssnano-stream'),
-        mqsplit = require('../lib/css-mq-split')(config),
+        subset = require('../lib/css-targeted-subset')(config),
         gulp = require('gulp'),
         gulpif = require('gulp-if'),
         path = require('path'),
@@ -39,7 +39,7 @@ module.exports = function (config) {
                 path.dirname = path.dirname.replace('scss', 'css');
             }))
             .pipe(autoprefixer())
-            .pipe(mqsplit())
+            .pipe(subset())
             .pipe(cacheBustCssRefs(config.distPath + config.assetsDir + 'css/'))
             .pipe(gulpif(
                 function (file) {

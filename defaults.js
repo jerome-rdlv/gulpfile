@@ -29,9 +29,13 @@ module.exports = {
             autoprefixer: [],
             nonano: [],
             split: {
-                mobile: [0, 420 / 16],
-                tablet: [420 / 16, 1200 / 16],
-                desktop: [1200 / 16],
+                urlPrefix: 'ts',
+                minRatio: .85,
+                ranges: [
+                    [0, 26],
+                    [26, 75],
+                    [75],
+                ]
             },
         },
         svg: true,
