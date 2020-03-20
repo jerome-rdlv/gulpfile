@@ -5,15 +5,17 @@ module.exports = function (config) {
     }
 
     const
-        autoprefixer = require('gulp-autoprefixer'),
+        autoprefixer = require('autoprefixer'),
         browserSync = require('../lib/browsersync'),
         cacheBustCssRefs = require('../lib/cachebust-css-refs')(config),
         changed = require('gulp-changed'),
-        cssnano = require('../lib/cssnano-stream'),
+        cssnano = require('cssnano'),
         subset = require('../lib/css-targeted-subset')(config),
         gulp = require('gulp'),
         gulpif = require('gulp-if'),
         path = require('path'),
+        postcss = require('gulp-postcss'),
+        pxtorem = require('postcss-pxtorem'),
         rename = require('gulp-rename'),
         run = require('../lib/run'),
         sass = require('gulp-sass'),
@@ -38,7 +40,11 @@ module.exports = function (config) {
             .pipe(rename(function (path) {
                 path.dirname = path.dirname.replace('scss', 'css');
             }))
-            .pipe(autoprefixer())
+            // these transforms are needed for cross-platform tests during development
+            .pipe(postcss([
+                autoprefixer(config.tasks.scss.autoprefixer),
+                pxtorem(config.tasks.scss.pxtorem),
+            ]))
             .pipe(subset())
             .pipe(cacheBustCssRefs(config.distPath + config.assetsDir + 'css/'))
             .pipe(gulpif(
@@ -46,10 +52,9 @@ module.exports = function (config) {
                     // disable cssnano for some files
                     return config.production && config.tasks.scss.nonano.indexOf(file.basename) === -1;
                 },
-                cssnano({
-                    autoprefixer: false,
-                    zindex: false
-                })
+                postcss([
+                    cssnano(config.tasks.scss.cssnano),
+                ])
             ))
             .pipe(gulp.dest(config.distPath))
             .pipe(touch())

@@ -27,7 +27,21 @@ module.exports = {
         jsil: [], // inline scripts
         scss: {
             autoprefixer: [],
-            nonano: [],
+            cssnano: {
+                autoprefixer: false,
+                zindex: false
+            },
+            // because block editor can not transform compressed CSS
+            nonano: ['editor.css'],
+            pxtorem: {
+                rootValue: 10,
+                propList: ['*'],
+                selectorBlackList: [],
+                replace: true,
+                mediaQuery: false,
+                // should be kept above 0 because 0px is needed for custom-properties to work
+                minPixelValue: 1,
+            },
             split: {
                 urlPrefix: 'ts',
                 minRatio: .85,
