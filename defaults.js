@@ -34,7 +34,7 @@ module.exports = {
             // because block editor can not transform compressed CSS
             nonano: ['editor.css'],
             pxtorem: {
-                rootValue: 10,
+                rootValue: 16,
                 propList: ['*'],
                 selectorBlackList: [],
                 replace: true,

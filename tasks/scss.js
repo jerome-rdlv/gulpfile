@@ -66,14 +66,7 @@ module.exports = function (config) {
             config.srcPath + config.assetsDir + 'scss/*.scss',
             config.srcPath + config.assetsDir + 'scss/**/*.scss',
             config.varPath + '_icon-svg.scss'
-        ])
-            .on('change', function (path) {
-                return run(scss, path);
-            })
-            .on('add', function (path) {
-                return run(scss, path);
-            })
-            ;
+        ]).on('all', gulp.series(scss));
     };
 
     return [
