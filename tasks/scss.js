@@ -10,6 +10,7 @@ module.exports = function (config) {
         cacheBustCssRefs = require('../lib/cachebust-css-refs')(config),
         changed = require('gulp-changed'),
         cssnano = require('cssnano'),
+        splitPrint = require('../lib/postcss-split-print')(config),
         subset = require('../lib/css-targeted-subset')(config),
         gulp = require('gulp'),
         gulpif = require('gulp-if'),
@@ -45,6 +46,7 @@ module.exports = function (config) {
                 autoprefixer(config.tasks.scss.autoprefixer),
                 pxtorem(config.tasks.scss.pxtorem),
             ]))
+            .pipe(splitPrint())
             .pipe(subset())
             .pipe(cacheBustCssRefs(config.distPath + config.assetsDir + 'css/'))
             .pipe(gulpif(

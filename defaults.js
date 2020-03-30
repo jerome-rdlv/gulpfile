@@ -49,8 +49,12 @@ module.exports = {
                     [0, 26],
                     [26, 75],
                     [75],
-                ]
+                ],
+                filter: /main\.css$/,
             },
+            print: {
+                filter: /main\.css$/
+            }
         },
         svg: true,
         symlink: [], // symlink
