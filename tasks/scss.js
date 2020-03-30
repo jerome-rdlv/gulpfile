@@ -66,7 +66,7 @@ module.exports = function (config) {
             config.srcPath + config.assetsDir + 'scss/*.scss',
             config.srcPath + config.assetsDir + 'scss/**/*.scss',
             config.varPath + '_icon-svg.scss'
-        ]).on('all', gulp.series(scss));
+        ], gulp.series(scss));
     };
 
     return [
