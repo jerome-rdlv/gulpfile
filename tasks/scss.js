@@ -17,6 +17,7 @@ module.exports = function (config) {
         path = require('path'),
         postcss = require('gulp-postcss'),
         pxtorem = require('postcss-pxtorem'),
+        transitionFactor = require('../lib/postcss-transition-factor'),
         rename = require('gulp-rename'),
         run = require('../lib/run'),
         sass = require('gulp-sass'),
@@ -45,6 +46,7 @@ module.exports = function (config) {
             .pipe(postcss([
                 autoprefixer(config.tasks.scss.autoprefixer),
                 pxtorem(config.tasks.scss.pxtorem),
+                transitionFactor(config.tasks.scss.transitionFactor),
             ]))
             .pipe(splitPrint())
             .pipe(subset())
