@@ -35,7 +35,10 @@ module.exports = {
             nonano: ['editor.css'],
             pxtorem: {
                 rootValue: 16,
-                propList: ['*'],
+                propList: [
+                    '*',
+                    '!--height-adminbar',
+                ],
                 selectorBlackList: [],
                 replace: true,
                 mediaQuery: false,
