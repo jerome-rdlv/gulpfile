@@ -26,7 +26,6 @@ module.exports = {
         js: [], // script entrypoints
         jsil: [], // inline scripts
         scss: {
-            autoprefixer: [],
             cssnano: {
                 autoprefixer: false,
                 zindex: false

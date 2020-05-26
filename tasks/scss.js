@@ -44,7 +44,7 @@ module.exports = function (config) {
             }))
             // these transforms are needed for cross-platform tests during development
             .pipe(postcss([
-                autoprefixer(config.tasks.scss.autoprefixer),
+                autoprefixer(),
                 pxtorem(config.tasks.scss.pxtorem),
                 transitionFactor(config.tasks.scss.transitionFactor),
             ]))
