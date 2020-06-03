@@ -58,6 +58,10 @@ module.exports = function (config) {
                             options: babelConfig
                         },
                     },
+                    {
+                        test: /(\.txt$|\.glsl$)/i,
+                        use: 'raw-loader',
+                    },
                 ],
             },
             watch: !!watch,
