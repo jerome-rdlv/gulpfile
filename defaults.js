@@ -57,7 +57,7 @@ module.exports = {
             print: {
                 filter: /main\.css$/
             },
-            transitionFactor: true
+            transitionFactor: false
         },
         svg: true,
         symlink: [], // symlink
