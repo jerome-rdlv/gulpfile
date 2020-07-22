@@ -50,7 +50,11 @@ module.exports = function (config) {
             ]))
             .pipe(splitPrint())
             .pipe(subset())
-            .pipe(cacheBustCssRefs(config.distPath + config.assetsDir + 'css/'))
+            .pipe(gulpif(
+                config.production,
+                cacheBustCssRefs(config.distPath + config.assetsDir + 'css/')
+            ))
+            // .pipe(cacheBustCssRefs(config.distPath + config.assetsDir + 'css/'))
             .pipe(gulpif(
                 function (file) {
                     // disable cssnano for some files
