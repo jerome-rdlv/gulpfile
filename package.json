@@ -53,6 +53,7 @@
         "postcss-remove-media-query-ranges": "^1.0.3",
         "raw-loader": "^4.0.1",
         "require-dir": ">=1.0",
+        "script-loader": "^0.7.2",
         "through": ">=2.3",
         "url": ">=0.11",
         "vinyl": ">=2.1",
