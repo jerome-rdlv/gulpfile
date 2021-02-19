@@ -14,6 +14,7 @@ module.exports = {
     assetsDir: '',
     cacheBust: 'path',
     production: false,
+    signature: 'md5', // timestamp, md5 or sha1
     tasks: {
         browsersync: true,
         // exclude from cleaning
