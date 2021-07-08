@@ -10,8 +10,8 @@ module.exports = function (config) {
         cacheBustCssRefs = require('../lib/cachebust-css-refs')(config),
         changed = require('gulp-changed'),
         cssnano = require('cssnano'),
-        splitPrint = require('../lib/postcss-split-print')(config),
-        subset = require('../lib/css-targeted-subset')(config),
+        splitPrint = require('../lib/postcss-split-print')(config.tasks.scss.print),
+        subset = require('../lib/css-targeted-subset')(config.tasks.scss.split),
         gulp = require('gulp'),
         gulpif = require('gulp-if'),
         path = require('path'),
@@ -20,7 +20,7 @@ module.exports = function (config) {
         transitionFactor = require('../lib/postcss-transition-factor'),
         rename = require('gulp-rename'),
         run = require('../lib/run'),
-        sass = require('gulp-sass'),
+        sass = require('gulp-sass')(require('node-sass')),
         touch = require('../lib/touch');
 
 
@@ -46,7 +46,7 @@ module.exports = function (config) {
             .pipe(postcss([
                 autoprefixer(),
                 pxtorem(config.tasks.scss.pxtorem),
-                transitionFactor(config.tasks.scss.transitionFactor),
+                // transitionFactor(config.tasks.scss.transitionFactor),
             ]))
             .pipe(splitPrint())
             .pipe(subset())
@@ -54,16 +54,15 @@ module.exports = function (config) {
                 config.production,
                 cacheBustCssRefs(config.distPath + config.assetsDir + 'css/')
             ))
-            // .pipe(cacheBustCssRefs(config.distPath + config.assetsDir + 'css/'))
-            .pipe(gulpif(
-                function (file) {
-                    // disable cssnano for some files
-                    return config.production && config.tasks.scss.nonano.indexOf(file.basename) === -1;
-                },
-                postcss([
-                    cssnano(config.tasks.scss.cssnano),
-                ])
-            ))
+            // .pipe(gulpif(
+            //     function (file) {
+            //         // disable cssnano for some files
+            //         return config.production && config.tasks.scss.nonano.indexOf(file.basename) === -1;
+            //     },
+            //     postcss([
+            //         cssnano(config.tasks.scss.cssnano),
+            //     ])
+            // ))
             .pipe(gulp.dest(config.distPath))
             .pipe(touch())
             ;
