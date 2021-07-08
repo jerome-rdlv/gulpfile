@@ -17,10 +17,9 @@ module.exports = function (config) {
         path = require('path'),
         postcss = require('gulp-postcss'),
         pxtorem = require('postcss-pxtorem'),
-        transitionFactor = require('../lib/postcss-transition-factor'),
         rename = require('gulp-rename'),
         run = require('../lib/run'),
-        sass = require('gulp-sass')(require('node-sass')),
+        sass = require('gulp-sass')(require('sass')),
         touch = require('../lib/touch');
 
 
@@ -44,9 +43,8 @@ module.exports = function (config) {
             }))
             // these transforms are needed for cross-platform tests during development
             .pipe(postcss([
-                autoprefixer(),
+                autoprefixer({}),
                 pxtorem(config.tasks.scss.pxtorem),
-                // transitionFactor(config.tasks.scss.transitionFactor),
             ]))
             .pipe(splitPrint())
             .pipe(subset())
@@ -54,15 +52,15 @@ module.exports = function (config) {
                 config.production,
                 cacheBustCssRefs(config.distPath + config.assetsDir + 'css/')
             ))
-            // .pipe(gulpif(
-            //     function (file) {
-            //         // disable cssnano for some files
-            //         return config.production && config.tasks.scss.nonano.indexOf(file.basename) === -1;
-            //     },
-            //     postcss([
-            //         cssnano(config.tasks.scss.cssnano),
-            //     ])
-            // ))
+            .pipe(gulpif(
+                function (file) {
+                    // disable cssnano for some files
+                    return config.production && config.tasks.scss.nonano.indexOf(file.basename) === -1;
+                },
+                postcss([
+                    cssnano(config.tasks.scss.cssnano),
+                ])
+            ))
             .pipe(gulp.dest(config.distPath))
             .pipe(touch())
             ;
