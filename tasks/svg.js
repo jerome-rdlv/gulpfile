@@ -37,20 +37,22 @@ module.exports = function (config) {
             </script>
          */
         const plugins = [
-            {removeDoctype: true},
-            {removeComments: true},
-            {removeTitle: true},
-            {convertStyleToAttrs: true},
+            {'name': 'removeDoctype'},
+            {'name': 'removeComments'},
+            {'name': 'removeTitle'},
+            {'name': 'convertStyleToAttrs'},
             {
-                cleanupIDs: {
+                'name': 'cleanupIDs',
+                'params': {
                     prefix: prefix + '-',
                     minify: true
                 }
             },
-            {removeViewBox: false},
-            {removeStyleElement: true},
+            {'name': 'removeViewBox', active: false},
+            {'name': 'removeStyleElement'},
             {
-                cleanupNumericValues: {
+                'name': 'cleanupNumericValues',
+                'params': {
                     floatPrecision: 5
                 }
             }
@@ -67,13 +69,16 @@ module.exports = function (config) {
             }
         }
 
-        return {plugins: plugins};
+        return {
+            multipass: true,
+            plugins: plugins,
+        };
     }
 
     const svg = function () {
         return gulp.src(config.srcPath + config.assetsDir + 'svg/*.svg', {base: config.srcPath})
-            .pipe(cacheBustSvgRefs())
             .pipe(changed(config.varPath))
+            .pipe(cacheBustSvgRefs())
             .pipe(svgmin(svgminCallback))
             .pipe(cleanSvg())
             .pipe(gulp.dest(config.varPath)).pipe(touch())
