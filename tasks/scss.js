@@ -10,6 +10,7 @@ module.exports = function (config) {
         cacheBustCssRefs = require('../lib/cachebust-css-refs')(config),
         changed = require('gulp-changed'),
         cssnano = require('cssnano'),
+        exec = require('gulp-exec'),
         splitPrint = require('../lib/postcss-split-print')(config.tasks.scss.print),
         subset = require('../lib/css-targeted-subset')(config.tasks.scss.split),
         gulp = require('gulp'),
@@ -28,17 +29,26 @@ module.exports = function (config) {
         if (!src || typeof src !== 'string' || /^_/.test(path.basename(src))) {
             src = [
                 config.srcPath + config.assetsDir + 'scss/*.scss',
+                '!' + config.srcPath + config.assetsDir + 'scss/_*.scss',
                 config.srcPath + config.assetsDir + 'scss/**/*.scss',
+                '!' + config.srcPath + config.assetsDir + 'scss/**/_*.scss',
             ];
         }
 
-        return gulp.src(src, {base: config.srcPath})
-            .pipe(changed(config.distPath))
-            .pipe(sass({
+        const sass = config.tasks.scss.engine === 'dart'
+            ? require('gulp-exec')(file => `/usr/bin/sass "${file.path}"`, {
+                pipeStdout: true
+            })
+            : require('gulp-sass')(require('sass'))({
                 outputStyle: 'expanded',
                 precision: 8
-            }).on('error', sass.logError))
+            }).on('error', sass.logError);
+
+        return gulp.src(src, {base: config.srcPath})
+            .pipe(changed(config.distPath))
+            .pipe(sass)
             .pipe(rename(function (path) {
+                path.extname = path.extname.replace('scss', 'css');
                 path.dirname = path.dirname.replace('scss', 'css');
             }))
             // these transforms are needed for cross-platform tests during development

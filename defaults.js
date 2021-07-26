@@ -58,7 +58,8 @@ module.exports = {
             print: {
                 filter: /main\.css$/
             },
-            transitionFactor: false
+            transitionFactor: false,
+            engine: 'dart', // dart or node
         },
         svg: true,
         symlink: [], // symlink
