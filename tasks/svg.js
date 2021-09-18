@@ -37,22 +37,22 @@ module.exports = function (config) {
             </script>
          */
         const plugins = [
-            {'name': 'removeDoctype'},
-            {'name': 'removeComments'},
-            {'name': 'removeTitle'},
-            {'name': 'convertStyleToAttrs'},
+            {name: 'removeDoctype'},
+            {name: 'removeComments'},
+            {name: 'removeTitle'},
+            {name: 'convertStyleToAttrs'},
             {
-                'name': 'cleanupIDs',
-                'params': {
+                name: 'cleanupIDs',
+                params: {
                     prefix: prefix + '-',
                     minify: true
                 }
             },
-            {'name': 'removeViewBox', active: false},
-            {'name': 'removeStyleElement'},
+            {name: 'removeViewBox', active: false},
+            {name: 'removeStyleElement'},
             {
-                'name': 'cleanupNumericValues',
-                'params': {
+                name: 'cleanupNumericValues',
+                params: {
                     floatPrecision: 5
                 }
             }
