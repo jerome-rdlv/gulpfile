@@ -1,0 +1,66 @@
+$svgs: (
+    'menu': (
+        filename: 'menu',
+        url: 'data:image/svg+xml,%3Csvg%20width%3D%2246%22%20height%3D%2246%22%20viewBox%3D%220%200%2046%2046%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Ccircle%20fill%3D%22{fill}%22%20cx%3D%2223%22%20cy%3D%2223%22%20r%3D%2223%22%20class%3D%22back%22%2F%3E%3Cg%20stroke%3D%22%23fff%22%20stroke-linecap%3D%22round%22%20stroke-width%3D%222%22%20class%3D%22front%22%3E%3Cg%20class%3D%22lines%22%3E%3Cpath%20d%3D%22M15%2016h15%22%20class%3D%22line1%22%2F%3E%3Cpath%20d%3D%22M15%2023h15%22%20class%3D%22line2%22%2F%3E%3Cpath%20d%3D%22M15%2030h15%22%20class%3D%22line3%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E',
+        width: 46px,
+        height: 46px,
+        variables: ("fill":"currentColor")
+    ),
+);
+
+@function str-replace($string, $search, $replace: '') {
+    $index: str-index($string, $search);
+    @if $index {
+        @return str-slice($string, 1, $index - 1) + $replace + str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
+    }
+    @return $string;
+}
+
+@function _get-svg-url($name, $args) {
+    @if map-has-key($svgs, $name) {
+        $args: keywords($args);
+        $svg: map-get($svgs, $name);
+        $url: map-get($svg, 'url');
+        $variables: map-get($svg, 'variables');
+        @each $key, $value in $variables {
+            @if map-has-key($args, $key) {
+                $value: map-get($args, $key);
+            }
+            $value: str-replace(quote($value), '#', '%23');
+            $url: str-replace($url, '{' + $key + '}', $value);
+        }
+        @return $url;
+    } @else {
+        @return null;
+    }
+}
+
+@function get-svg-url($name, $args...) {
+    @return _get-svg-url($name, $args);
+}
+
+@mixin svg-background($name, $args...) {
+    $url: _get-svg-url($name, $args);
+    @if $url != null {
+        background-image: url($url);
+    } @else {
+        @warn 'SVG '+ $name +' can not be found.';
+    }
+}
+
+@mixin svg-dims($name) {
+    @if map-has-key($svgs, $name) {
+        width: map-get(map-get($svgs, $name), 'width');
+        height: map-get(map-get($svgs, $name), 'height');
+    } @else {
+        @warn 'SVG '+ $name +' can not be found.';
+    }
+}
+@mixin svg-background-wd($name) {
+    @if map-has-key($svgs, $name) {
+        @include svg-background($name);
+        @include svg-dims($name);
+    } @else {
+        @warn 'SVG '+ $name +' can not be found.';
+    }
+}

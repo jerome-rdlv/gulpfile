@@ -9,11 +9,14 @@
     "author": "Jérôme Mulsant <jerome@rue-de-la-vieille.fr>",
     "license": "MIT",
     "private": true,
+    "scripts": {
+        "test": "node node_modules/gulp/bin/gulp.js --gulpfile test/gulpfile.js"
+    },
     "dependencies": {
         "@babel/core": "^7.7",
         "@babel/preset-env": "^7.7",
         "autoprefixer": "^9.7",
-        "babel-loader": "^7.1",
+        "babel-loader": "^8.2",
         "browser-sync": "^2.23",
         "browserify": "^16.1",
         "cheerio": "^0.22",
