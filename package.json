@@ -44,7 +44,7 @@
         "gulp-rename": "^1.2",
         "gulp-sass": "^5.0",
         "gulp-sourcemaps": "^2.6",
-        "gulp-svgmin": "^1.2",
+        "gulp-svgmin": "^7.1",
         "gulp-tap": "^1.0",
         "gulp-terser": "^2.1",
         "gulp-touch-cmd": "^0.0",
