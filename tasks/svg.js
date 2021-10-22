@@ -71,6 +71,7 @@ module.exports = function (config) {
 
         return {
             multipass: true,
+            full: true,
             plugins: plugins,
         };
     }
