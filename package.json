@@ -68,9 +68,6 @@
         "vinyl-transform": "^1.0",
         "webpack-stream": "^6.1"
     },
-    "peerDependencies": {
-        "postcss": "^8.3"
-    },
     "eslintConfig": {
         "env": {
             "es6": true,
