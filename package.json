@@ -16,6 +16,7 @@
         "@babel/core": "^7.7",
         "@babel/preset-env": "^7.7",
         "autoprefixer": "^9.7",
+        "eslint": "^6.8",
         "babel-loader": "^8.2",
         "browser-sync": "^2.23",
         "browserify": "^16.1",
@@ -64,9 +65,7 @@
         "vinyl": "^2.1",
         "vinyl-buffer": "^1.0",
         "vinyl-named": "^1.1",
-        "vinyl-source-stream": "^2.0",
-        "vinyl-transform": "^1.0",
-        "webpack": "^5.59",
+        "webpack": "^4.46",
         "webpack-stream": "^6.1"
     },
     "eslintConfig": {
