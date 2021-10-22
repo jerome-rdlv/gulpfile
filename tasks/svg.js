@@ -41,6 +41,7 @@ module.exports = function (config) {
             {name: 'removeComments'},
             {name: 'removeTitle'},
             {name: 'convertStyleToAttrs'},
+            {name: 'convertTransform'},
             {
                 name: 'cleanupIDs',
                 params: {
