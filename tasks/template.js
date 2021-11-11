@@ -6,16 +6,13 @@ module.exports = function (config) {
 
     const
         addUrlParams = require('../lib/add-url-params'),
-        browserSync = require('../lib/browsersync'),
         cacheBustHtmlRefs = require('../lib/cachebust-html-refs')(config),
         cheerio = require('cheerio'),
         concat = require('gulp-concat'),
         crypto = require('crypto'),
         fs = require('fs'),
         gulp = require('gulp'),
-        htmlBeautify = require('gulp-html-beautify'),
         htmlmin = require('gulp-htmlmin'),
-        mustache = require('mustache'),
         path = require('path'),
         touch = require('../lib/touch'),
         through = require('through2');

@@ -17,6 +17,9 @@ module.exports = require('../index.js')({
         js: [
             'js/main.js',
         ],
+        jsil: [
+            'js/reveal.js',
+        ],
         scss: {
             // because block editor can not transform compressed CSS
             nonano: ['editor.css'],

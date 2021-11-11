@@ -6,11 +6,9 @@ module.exports = function (config) {
 
     const
         autoprefixer = require('autoprefixer'),
-        browserSync = require('../lib/browsersync'),
         cacheBustCssRefs = require('../lib/cachebust-css-refs')(config),
         changed = require('gulp-changed'),
         cssnano = require('cssnano'),
-        exec = require('gulp-exec'),
         splitPrint = require('../lib/postcss-split-print')(config.tasks.scss.print),
         subset = require('../lib/css-targeted-subset')(config.tasks.scss.split),
         gulp = require('gulp'),
@@ -19,8 +17,6 @@ module.exports = function (config) {
         postcss = require('gulp-postcss'),
         pxtorem = require('postcss-pxtorem'),
         rename = require('gulp-rename'),
-        run = require('../lib/run'),
-        sass = require('gulp-sass')(require('sass')),
         touch = require('../lib/touch');
 
 

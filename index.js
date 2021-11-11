@@ -5,7 +5,6 @@ module.exports = function (override) {
         imagemin = require('gulp-imagemin'),
         merge = require('./lib/merge'),
         path = require('path'),
-        // requireDir = require('require-dir'),
         argv = require('yargs').argv
     ;
 
