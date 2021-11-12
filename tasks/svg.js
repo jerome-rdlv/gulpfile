@@ -1,6 +1,6 @@
 module.exports = function (config) {
 
-    if (!config.tasks.svg) {
+    if (config.tasks.svg === false) {
         return false;
     }
 

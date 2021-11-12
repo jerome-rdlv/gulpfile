@@ -4,6 +4,10 @@ is different from `js` because it does not bundle dependencies.
  */
 module.exports = function (config) {
 
+    if (config.tasks.jsil === false) {
+        return;
+    }
+
     const
         eslint = require('gulp-eslint-new'),
         gulp = require('gulp'),
@@ -11,9 +15,11 @@ module.exports = function (config) {
         touch = require('../lib/touch'),
         terser = require('gulp-terser');
 
-    const src = config.tasks.jsil.map(function (entry) {
-        return config.srcPath + config.assetsDir + entry;
-    });
+    const src = typeof config.tasks.jsil === 'object'
+        ? config.tasks.jsil.map(function (entry) {
+            return config.srcPath + config.assetsDir + entry;
+        })
+        : [];
 
     src.push(config.srcPath + config.assetsDir + 'js/inline/*.js');
 

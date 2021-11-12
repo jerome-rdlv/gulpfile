@@ -16,7 +16,6 @@ module.exports = {
     production: false,
     signature: 'md5', // timestamp, md5 or sha1
     tasks: {
-        browsersync: true,
         // exclude from cleaning
         cleanex: [],
         // static assets to copy

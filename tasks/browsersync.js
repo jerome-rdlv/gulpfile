@@ -1,9 +1,5 @@
 module.exports = function (config) {
 
-    if (/*config.production || */!config.tasks.browsersync) {
-        return false;
-    }
-
     if (!config.url.length) {
         throw 'You must configure project URL for browserSync to work';
     }
