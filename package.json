@@ -1,9 +1,9 @@
 {
     "name": "gulpfile",
-    "version": "0.0.1",
+    "version": "GIT",
     "main": "index.js",
     "repository": {
-        "url": "https://gitlab.rue-de-la-vieille.fr/jerome/gulpfile",
+        "url": "https://github.com/jerome-rdlv/gulpfile",
         "type": "git"
     },
     "author": "Jérôme Mulsant <jerome@rue-de-la-vieille.fr>",
