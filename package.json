@@ -3,7 +3,7 @@
     "version": "GIT",
     "main": "index.js",
     "repository": {
-        "url": "https://github.com/jerome-rdlv",
+        "url": "https://github.com/jerome-rdlv/gulpfile",
         "type": "git"
     },
     "author": "Jérôme Mulsant <jerome@rue-de-la-vieille.fr>",
