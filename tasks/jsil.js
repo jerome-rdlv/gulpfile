@@ -5,7 +5,8 @@ is different from `js` because it does not bundle dependencies.
 module.exports = function (config) {
 
     const
-        eslint = require('gulp-eslint-new'),
+        browserSync = require('../lib/browsersync'),
+        eslint = require('gulp-eslint'),
         gulp = require('gulp'),
         gulpif = require('gulp-if'),
         touch = require('../lib/touch'),

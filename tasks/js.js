@@ -3,8 +3,6 @@ module.exports = function (config) {
     if (!config.tasks.js || !config.tasks.js.length) {
         return false;
     }
-    
-    const ESLintPlugin = require('eslint-webpack-plugin');
 
     function getBabelConfig(legacy, modules) {
         const envOptions = {
@@ -42,16 +40,16 @@ module.exports = function (config) {
             target: 'web',
             module: {
                 rules: [
-                    // {
-                    //     enforce: 'pre',
-                    //     test: /\.m?jsx?$/,
-                    //     exclude: /node_modules/,
-                    //     loader: 'eslint-loader',
-                    //     options: {
-                    //         failOnError: false,
-                    //         failOnWarning: false,
-                    //     }
-                    // },
+                    {
+                        enforce: 'pre',
+                        test: /\.m?jsx?$/,
+                        exclude: /node_modules/,
+                        loader: 'eslint-loader',
+                        options: {
+                            failOnError: false,
+                            failOnWarning: false,
+                        }
+                    },
                     {
                         test: /\.m?jsx?$/,
                         exclude: /node_modules/,
@@ -61,7 +59,7 @@ module.exports = function (config) {
                         },
                     },
                     {
-                        test: /(\.txt$|\.glsl$)/i,
+                        test: /\.(txt|glsl|svg)$/i,
                         use: 'raw-loader',
                     },
                 ],
@@ -71,14 +69,12 @@ module.exports = function (config) {
             mode: config.production ? 'production' : 'development',
             output: {
                 filename: legacy ? 'js/[name].legacy.js' : 'js/[name].js'
-            },
-            plugins: [
-                new ESLintPlugin(),
-            ],
+            }
         };
     }
 
     const
+        browserSync = require('../lib/browsersync'),
         gulp = require('gulp'),
         gulpif = require('gulp-if'),
         named = require('vinyl-named'),

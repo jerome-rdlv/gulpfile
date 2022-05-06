@@ -6,6 +6,7 @@ module.exports = function (config) {
 
     const
         autoprefixer = require('autoprefixer'),
+        browserSync = require('../lib/browsersync'),
         cacheBustCssRefs = require('../lib/cachebust-css-refs')(config),
         changed = require('gulp-changed'),
         cssnano = require('cssnano'),
@@ -17,6 +18,8 @@ module.exports = function (config) {
         postcss = require('gulp-postcss'),
         pxtorem = require('postcss-pxtorem'),
         rename = require('gulp-rename'),
+        run = require('../lib/run'),
+        sass = require('gulp-sass'),
         touch = require('../lib/touch');
 
 
@@ -25,32 +28,17 @@ module.exports = function (config) {
         if (!src || typeof src !== 'string' || /^_/.test(path.basename(src))) {
             src = [
                 config.srcPath + config.assetsDir + 'scss/*.scss',
-                '!' + config.srcPath + config.assetsDir + 'scss/_*.scss',
                 config.srcPath + config.assetsDir + 'scss/**/*.scss',
-                '!' + config.srcPath + config.assetsDir + 'scss/**/_*.scss',
             ];
-        }
-
-        let compile;
-
-        if (config.tasks.scss.engine === 'dart') {
-            compile = require('gulp-exec')(file => `/usr/bin/sass "${file.path}"`, {
-                continueOnError: false,
-                pipeStdout: true
-            }).on('error', console.log);
-        } else {
-            const sass = require('gulp-sass')(require('sass'));
-            compile = sass({
-                outputStyle: 'expanded',
-                precision: 8
-            }).on('error', sass.logError);
         }
 
         return gulp.src(src, {base: config.srcPath})
             .pipe(changed(config.distPath))
-            .pipe(compile)
+            .pipe(sass({
+                outputStyle: 'expanded',
+                precision: 8
+            }).on('error', sass.logError))
             .pipe(rename(function (path) {
-                path.extname = path.extname.replace('scss', 'css');
                 path.dirname = path.dirname.replace('scss', 'css');
             }))
             // these transforms are needed for cross-platform tests during development
