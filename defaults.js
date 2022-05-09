@@ -63,6 +63,9 @@ module.exports = {
         svg: true,
         symlink: [], // symlink
         template: [], // templates
-        thumb: false // thumbnail file
+        thumb: false, // thumbnail file
+        critical: [
+            {name: 'front-page.php', url: 'http://localhost'}
+        ]
     }
 };
