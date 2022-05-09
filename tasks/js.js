@@ -94,10 +94,12 @@ module.exports = function (config) {
     const js = function (cb, watch) {
 
         return gulp.src(src, {
-            base: config.srcPath,
+            base: config.srcPath +'js',
             sourcemaps: true,
         })
-            .pipe(named())
+            .pipe(named(function (file) {
+                return file.relative.substr(0, file.relative.length - file.extname.length);
+            }))
             .pipe(webpack({
                 watch: !!watch,
                 config: [getWPConfig(true, watch), getWPConfig(false, watch)]
