@@ -1,9 +1,5 @@
 module.exports = function (config) {
 
-    if (!config.url.length) {
-        throw 'You must configure project URL for browserSync to work';
-    }
-
     const
         browserSync = require('../lib/browsersync'),
         gulp = require('gulp')
@@ -11,6 +7,9 @@ module.exports = function (config) {
 
     // return the task
     return function browsersync() {
+        if (!config.url || !config.url.length) {
+            throw 'You must add --url argument for browserSync to work.';
+        }
         return browserSync.init(config);
     };
 };

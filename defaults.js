@@ -7,7 +7,6 @@
  *  url option accepts an array
  */
 module.exports = {
-    url: null,
     srcDir: 'src',
     varDir: 'var',
     distDir: 'assets',
