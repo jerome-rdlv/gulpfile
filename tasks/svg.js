@@ -78,7 +78,7 @@ module.exports = function (config) {
     }
 
     const svg = function () {
-        return gulp.src(config.srcPath + config.assetsDir + 'svg/*.svg', {base: config.srcPath})
+        return gulp.src(config.srcPath + config.assetsDir + 'svg/**/*.svg', {base: config.srcPath})
             .pipe(changed(config.varPath))
             .pipe(cacheBustSvgRefs())
             .pipe(svgmin(svgminCallback))
@@ -97,7 +97,7 @@ module.exports = function (config) {
             tpl = __dirname + '/../svg.scss.mustache';
         }
 
-        return gulp.src(config.varPath + config.assetsDir + 'svg/*.svg')
+        return gulp.src(config.varPath + config.assetsDir + 'svg/**/*.svg', {base: config.varPath + config.assetsDir + 'svg'})
             .pipe(svgToScss({
                 template: tpl,
                 output: '_svg.scss'
@@ -108,7 +108,7 @@ module.exports = function (config) {
 
     // svg availability for inclusion as inline symbol in html
     const svg_symbol = function () {
-        return gulp.src(config.varPath + config.assetsDir + 'svg/*.svg', {base: config.varPath})
+        return gulp.src(config.varPath + config.assetsDir + 'svg/**/*.svg', {base: config.varPath})
             .pipe(changed(config.distPath, {extension: '.symbol.svg'}))
             .pipe(svgToSymbol())
             .pipe(clearSvgParams())
@@ -123,7 +123,7 @@ module.exports = function (config) {
         // prepare svg, create symbols and update scss lib
         return gulp.watch([
             config.srcPath + 'svg.scss.mustache',
-            config.srcPath + config.assetsDir + 'svg/*.svg',
+            config.srcPath + config.assetsDir + 'svg/**/*.svg',
             config.srcPath + config.assetsDir + 'img/*',
         ], gulp.series(svg, gulp.parallel(svg_scss, svg_symbol)));
     };
