@@ -15,7 +15,6 @@ module.exports = function (override) {
     merge(config, override);
 
     // override with possible CLI arguments
-    config.url = argv.url || config.url;
     config.production = argv.production || argv.prod || config.production;
     config.debug = argv.debug || config.debug;
 

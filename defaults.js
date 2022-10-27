@@ -6,7 +6,9 @@
  *
  *  url option accepts an array
  */
+const argv = require('yargs').argv;
 module.exports = {
+    url: argv.url,
     srcDir: 'src',
     varDir: 'var',
     distDir: 'assets',
@@ -64,7 +66,7 @@ module.exports = {
         template: [], // templates
         thumb: false, // thumbnail file
         critical: [
-            {name: 'front-page.php', url: 'http://localhost'}
+            {name: 'front-page.php', url: argv.url}
         ],
     }
 };
