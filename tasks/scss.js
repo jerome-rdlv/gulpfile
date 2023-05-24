@@ -19,7 +19,7 @@ module.exports = function (config) {
         pxtorem = require('postcss-pxtorem'),
         rename = require('gulp-rename'),
         run = require('../lib/run'),
-        sass = require('gulp-sass'),
+        sass = require('gulp-sass')(require('sass'));
         touch = require('../lib/touch');
 
 

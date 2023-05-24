@@ -9,6 +9,9 @@
     "author": "Jérôme Mulsant <jerome@rue-de-la-vieille.fr>",
     "license": "MIT",
     "private": true,
+    "engines": {
+        "node": "^14.21"
+    },
     "dependencies": {
         "@babel/core": "^7.7",
         "@babel/preset-env": "^7.7",
@@ -40,7 +43,7 @@
         "gulp-imagemin": "^7.1",
         "gulp-postcss": "^7.0",
         "gulp-rename": "^1.2",
-        "gulp-sass": "<5.0",
+        "gulp-sass": "^5.1",
         "gulp-sourcemaps": "^2.6",
         "gulp-svgmin": "^1.2",
         "gulp-tap": "^1.0",
