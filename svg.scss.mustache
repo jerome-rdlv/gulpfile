@@ -26,7 +26,7 @@ $svgs: ({{#items}}
             @if map-has-key($args, $key) {
                 $value: map-get($args, $key);
             }
-            $value: str-replace(quote($value), '#', '%23');
+            $value: str-replace(quote($value + ''), '#', '%23');
             $url: str-replace($url, '{' + $key + '}', $value);
         }
         @return $url;
