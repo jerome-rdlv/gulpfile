@@ -37,36 +37,45 @@ module.exports = function (config) {
             </script>
          */
         const plugins = [
-            {'name': 'removeDoctype'},
-            {'name': 'removeComments'},
-            {'name': 'removeTitle'},
-            {'name': 'convertStyleToAttrs'},
             {
-                'name': 'cleanupIDs',
-                'params': {
-                    prefix: prefix + '-',
-                    minify: true
-                }
+                name: 'preset-default',
+                params: {
+                    overrides: {
+                        removeDoctype: true,
+                        removeComments: true,
+                        removeTitle: true,
+                        convertStyleToAttrs: true,
+                        cleanupIDs: {
+                            prefix: prefix + '-',
+                            minify: true
+                        },
+                        removeStyleElement: true
+                    },
+                },
             },
-            {'name': 'removeViewBox', active: false},
-            {'name': 'removeStyleElement'},
+            {removeViewBox: false},
             {
-                'name': 'cleanupNumericValues',
-                'params': {
+                name: 'cleanupNumericValues',
+                params: {
                     floatPrecision: 5
                 }
             }
         ];
 
         // per file svgmin options
-        const $ = cheerio.load(file.contents.toString(), config.cheerioParserSvgOptions);
-        const $opts = $('#svgo-options');
-        const opts = JSON.parse($opts.html());
+        try {
+            const $ = cheerio.load(file.contents.toString(), config.cheerioParserSvgOptions);
+            const $opts = $('#svgo-options');
+            const opts = JSON.parse($opts.html());
 
-        if (opts) {
-            for (let i = 0; i < opts.length; ++i) {
-                plugins.push(opts[i]);
+            if (opts) {
+                for (let i = 0; i < opts.length; ++i) {
+                    plugins.push(opts[i]);
+                }
             }
+        } catch (error) {
+            console.error(`Error with file ${file.path} `);
+            console.error(error);
         }
 
         return {
@@ -132,4 +141,10 @@ module.exports = function (config) {
         svg_scss,
         svg_symbol
     ];
-};
+}
+;
+;
+;
+;
+;
+;
