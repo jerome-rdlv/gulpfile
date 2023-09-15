@@ -3,41 +3,11 @@ module.exports = function (config) {
     if (!config.tasks.js || !config.tasks.js.length) {
         return false;
     }
-    
+
     const ESLintPlugin = require('eslint-webpack-plugin');
+    const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-    function getBabelConfig(legacy, modules) {
-        const envOptions = {
-            corejs: 3,
-            useBuiltIns: "usage",
-            shippedProposals: true,
-            modules: !!modules,
-            debug: !!config.debug && legacy
-        };
-
-        if (!legacy) {
-            envOptions.ignoreBrowserslistConfig = true;
-            envOptions.targets = {
-                esmodules: true
-            };
-        }
-
-        return {
-            exclude: 'node_modules/**',
-            presets: [
-                [
-                    "@babel/preset-env",
-                    envOptions
-                ]
-            ]
-        };
-    }
-
-    function getWPConfig(legacy, watch) {
-
-        const babelConfig = getBabelConfig(legacy, false);
-        babelConfig.cacheDirectory = true;
-
+    function getWPConfig(watch) {
         return {
             target: 'web',
             module: {
@@ -57,7 +27,21 @@ module.exports = function (config) {
                         exclude: /node_modules/,
                         use: {
                             loader: 'babel-loader',
-                            options: babelConfig
+                            options: {
+                                exclude: 'node_modules/**',
+                                cacheDirectory: true,
+                                presets: [
+                                    [
+                                        "@babel/preset-env",
+                                        {
+                                            corejs: 3.22,
+                                            useBuiltIns: 'entry',
+                                            modules: 'auto',
+                                            debug: !!config.debug
+                                        }
+                                    ]
+                                ]
+                            }
                         },
                     },
                     {
@@ -70,10 +54,13 @@ module.exports = function (config) {
             devtool: config.production ? false : 'eval',
             mode: config.production ? 'production' : 'development',
             output: {
-                filename: legacy ? 'js/[name].legacy.js' : 'js/[name].js'
+                filename: 'js/[name].js'
             },
             plugins: [
                 new ESLintPlugin(),
+                new BundleAnalyzerPlugin({
+                    openAnalyzer: false
+                })
             ],
         };
     }
@@ -106,7 +93,7 @@ module.exports = function (config) {
             }))
             .pipe(webpack({
                 watch: !!watch,
-                config: [getWPConfig(true, watch), getWPConfig(false, watch)]
+                config: getWPConfig(watch)
             }))
             .pipe(gulpif(config.production, terser()))
             .pipe(gulp.dest(config.distPath, {
