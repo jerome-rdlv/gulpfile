@@ -58,7 +58,7 @@ module.exports = function (config) {
             },
             plugins: [
                 new ESLintPlugin(),
-                new BundleAnalyzerPlugin({
+                watch ? null : new BundleAnalyzerPlugin({
                     openAnalyzer: false
                 })
             ],
