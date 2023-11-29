@@ -58,8 +58,10 @@ module.exports = function (config) {
             },
             plugins: [
                 new ESLintPlugin(),
-                watch ? null : new BundleAnalyzerPlugin({
-                    openAnalyzer: false
+                new BundleAnalyzerPlugin({
+                    analyzerMode: 'static',
+                    reportFilename: config.distPath + '/report.html',
+                    openAnalyzer: false,
                 })
             ],
         };
