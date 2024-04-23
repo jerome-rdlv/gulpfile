@@ -82,6 +82,7 @@ module.exports = function (config) {
         return gulp.watch([
             config.srcPath + config.assetsDir + 'scss/*.scss',
             config.srcPath + config.assetsDir + 'scss/**/*.scss',
+            path.resolve(config.srcPath + '../blocks') + '/**/*.scss',
             config.varPath + '_icon-svg.scss'
         ], gulp.series(scss));
     };
