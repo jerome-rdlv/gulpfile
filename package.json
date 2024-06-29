@@ -53,6 +53,7 @@
         "raw-loader": "^4.0",
         "sass": "^1.35",
         "script-loader": "^0.7",
+        "through2": "^4.0.2",
         "vinyl": "^2.1",
         "vinyl-named": "^1.1",
         "webpack": "^5.64",
