@@ -9,7 +9,7 @@
     "author": "Jérôme Mulsant <jerome@rue-de-la-vieille.fr>",
     "license": "MIT",
     "private": true,
-    "packageManager": "yarn@4.3.1",
+    "packageManager": "yarn@3.8.3",
     "scripts": {
         "test": "gulp --prod --gulpfile test/gulpfile.js",
         "test-js": "node node_modules/gulp/bin/gulp.js --prod --gulpfile test/gulpfile.js js",
