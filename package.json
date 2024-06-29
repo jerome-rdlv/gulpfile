@@ -9,8 +9,9 @@
     "author": "Jérôme Mulsant <jerome@rue-de-la-vieille.fr>",
     "license": "MIT",
     "private": true,
+    "packageManager": "yarn@4.3.1",
     "scripts": {
-        "test": "node node_modules/gulp/bin/gulp.js --prod --gulpfile test/gulpfile.js",
+        "test": "gulp --prod --gulpfile test/gulpfile.js",
         "test-js": "node node_modules/gulp/bin/gulp.js --prod --gulpfile test/gulpfile.js js",
         "test-jsil": "node node_modules/gulp/bin/gulp.js --prod --gulpfile test/gulpfile.js jsil",
         "test-scss": "node node_modules/gulp/bin/gulp.js --prod --gulpfile test/gulpfile.js scss",
@@ -19,6 +20,7 @@
     "dependencies": {
         "@babel/core": "^7.7",
         "@babel/preset-env": "^7.7",
+        "@eslint/eslintrc": "^3.1.0",
         "autoprefixer": "^9.7",
         "babel-loader": "^8.2",
         "browser-sync": "^2.27",
@@ -30,6 +32,7 @@
         "eslint": "^7.32",
         "eslint-webpack-plugin": "^3.1.1",
         "glob": "^10.4.2",
+        "graceful-fs": "^4.2.11",
         "gulp": "^4.0",
         "gulp-changed": "^3.2",
         "gulp-clean": "^0.4",
@@ -58,6 +61,7 @@
         "vinyl-named": "^1.1",
         "webpack": "^5.64",
         "webpack-bundle-analyzer": "^4.9.1",
-        "webpack-stream": "^7.0"
+        "webpack-stream": "^7.0",
+        "yargs": "^17.7.2"
     }
 }
