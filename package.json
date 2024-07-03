@@ -20,7 +20,7 @@
     "dependencies": {
         "@babel/core": "^7.7",
         "@babel/preset-env": "^7.7",
-        "@eslint/eslintrc": "^3.1.0",
+        "@eslint/eslintrc": "^3.1",
         "autoprefixer": "^9.7",
         "babel-loader": "^8.2",
         "browser-sync": "^2.27",
@@ -30,14 +30,14 @@
         "css-mediaquery": "^0.1",
         "cssnano": "^4.0",
         "eslint": "^7.32",
-        "eslint-webpack-plugin": "^3.1.1",
-        "glob": "^10.4.2",
-        "graceful-fs": "^4.2.11",
+        "eslint-webpack-plugin": "^3.1",
+        "glob": "^10.4",
+        "graceful-fs": "^4.2",
         "gulp": "^4.0",
         "gulp-changed": "^3.2",
         "gulp-clean": "^0.4",
         "gulp-concat": "^2.6",
-        "gulp-eslint-new": "^0.6.0",
+        "gulp-eslint-new": "^0.6",
         "gulp-exec": "^5.0",
         "gulp-htmlmin": "^4.0",
         "gulp-if": "^2.0",
@@ -56,12 +56,12 @@
         "raw-loader": "^4.0",
         "sass": "^1.35",
         "script-loader": "^0.7",
-        "through2": "^4.0.2",
+        "through2": "^4.0",
         "vinyl": "^2.1",
         "vinyl-named": "^1.1",
         "webpack": "^5.64",
-        "webpack-bundle-analyzer": "^4.9.1",
+        "webpack-bundle-analyzer": "^4.9",
         "webpack-stream": "^7.0",
-        "yargs": "^17.7.2"
+        "yargs": "^17.7"
     }
 }

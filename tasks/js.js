@@ -51,6 +51,9 @@ module.exports = function (config) {
                 ],
             },
             watch: !!watch,
+            watchOptions: {
+                ignored: '/node_modules/',
+            },
             devtool: config.production ? false : 'eval',
             mode: config.production ? 'production' : 'development',
             output: {
