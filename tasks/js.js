@@ -60,7 +60,9 @@ module.exports = function (config) {
                 filename: 'js/[name].js'
             },
             plugins: [
-                new ESLintPlugin(),
+                new ESLintPlugin({
+                    configType: 'flat',
+                }),
                 new BundleAnalyzerPlugin({
                     analyzerMode: 'static',
                     reportFilename: config.distPath + '/report.html',
