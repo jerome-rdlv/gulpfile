@@ -34,7 +34,7 @@
         "gulp-changed": "^3.2",
         "gulp-clean": "^0.4",
         "gulp-concat": "^2.6",
-        "gulp-eslint-new": "^0.6",
+        "gulp-eslint-new": "^2.2",
         "gulp-exec": "^5.0",
         "gulp-htmlmin": "^4.0",
         "gulp-if": "^2.0",
