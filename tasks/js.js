@@ -51,18 +51,13 @@ module.exports = function (config) {
                 ],
             },
             watch: !!watch,
-            watchOptions: {
-                ignored: '/node_modules/',
-            },
-            devtool: config.production ? false : 'eval',
+            devtool: config.production ? 'source-map' : 'eval-cheap-module-source-map',
             mode: config.production ? 'production' : 'development',
             output: {
                 filename: 'js/[name].js'
             },
             plugins: [
-                new ESLintPlugin({
-                    configType: 'flat',
-                }),
+                new ESLintPlugin(),
                 new BundleAnalyzerPlugin({
                     analyzerMode: 'static',
                     reportFilename: config.distPath + '/report.html',
