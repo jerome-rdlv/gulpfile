@@ -9,9 +9,6 @@
     "author": "Jérôme Mulsant <jerome@rue-de-la-vieille.fr>",
     "license": "MIT",
     "private": true,
-    "engines": {
-        "node": "^14.21"
-    },
     "dependencies": {
         "@babel/core": "^7.7",
         "@babel/preset-env": "^7.7",
